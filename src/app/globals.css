@@ -1,18 +1,106 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+ 
+@layer base {
+  :root {
+    /* Foreground and Background Colors */
+    --foreground-rgb: 33, 33, 33;  /* Dark Grey */
+    --background-start-rgb: 250, 250, 250;  /* Light Grey */
+    --background-end-rgb: 255, 255, 255;  /* White */
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+    /* Primary Color Scheme */
+    --background: hsl(0, 0%, 98%);
+    --foreground: hsl(0, 0%, 13%);
+
+    --card: hsl(0, 0%, 100%);
+    --card-foreground: hsl(0, 0%, 13%);
+ 
+    --popover: hsl(0, 0%, 100%);
+    --popover-foreground: hsl(0, 0%, 13%);
+ 
+    /* Supabase Blue */
+    --primary: hsl(207, 90%, 54%);
+    --primary-foreground: hsl(0, 0%, 100%);
+
+    /* Secondary Colors */
+    --secondary: hsl(207, 90%, 94%);
+    --secondary-foreground: hsl(207, 90%, 54%);
+ 
+    --muted: hsl(207, 90%, 94%);
+    --muted-foreground: hsl(207, 90%, 34%);
+ 
+    --accent: hsl(207, 90%, 94%);
+    --accent-foreground: hsl(207, 90%, 54%);
+ 
+    /* Destructive or Alert Colors */
+    --destructive: hsl(0, 79%, 63%);
+    --destructive-foreground: hsl(0, 0%, 100%);
+
+    /* Borders and Inputs */
+    --border: hsl(0, 0%, 86%);
+    --input: hsl(0, 0%, 86%);
+    --ring: hsl(207, 90%, 54%);
+ 
+    /* Border Radius */
+    --radius: 0.5rem;
+  }
 }
+
+ 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    /* Foreground and Background Colors */
+    --foreground-rgb: 255, 255, 255;  /* White */
+    --background-start-rgb: 33, 33, 33;  /* Dark Grey */
+    --background-end-rgb: 33, 33, 33;  /* Dark Grey */
+
+    /* Primary Color Scheme */
+    --background: hsl(0, 0%, 13%);
+    --foreground: hsl(0, 0%, 98%);
+
+    --card: hsl(0, 0%, 18%);
+    --card-foreground: hsl(0, 0%, 98%);
+ 
+    --popover: hsl(0, 0%, 18%);
+    --popover-foreground: hsl(0, 0%, 98%);
+ 
+    /* Supabase Blue */
+    --primary: hsl(207, 90%, 54%);
+    --primary-foreground: hsl(0, 0%, 100%);
+
+    /* Secondary Colors */
+    --secondary: hsl(207, 90%, 34%);
+    --secondary-foreground: hsl(207, 90%, 94%);
+ 
+    --muted: hsl(207, 90%, 34%);
+    --muted-foreground: hsl(207, 90%, 94%);
+ 
+    --accent: hsl(207, 90%, 34%);
+    --accent-foreground: hsl(207, 90%, 94%);
+ 
+    /* Destructive or Alert Colors */
+    --destructive: hsl(0, 79%, 63%);
+    --destructive-foreground: hsl(0, 0%, 100%);
+
+    /* Borders and Inputs */
+    --border: hsl(0, 0%, 86%);
+    --input: hsl(0, 0%, 86%);
+    --ring: hsl(207, 90%, 54%);
+ 
+    /* Border Radius */
+    --radius: 0.5rem;
   }
 }
 
