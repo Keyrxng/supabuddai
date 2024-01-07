@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import {
   Table,
   TableBody,
@@ -274,12 +274,39 @@ export const columns: ColumnDef<RLSPolicy>[] = [
   },
 ];
 
-export function PolicyDataTable() {
+function jsonToCSV(json, project, user) {
+  const rows = [];
+
+  const headers = Object.keys(json[0]);
+  rows.push(headers.join(","));
+
+  json.forEach((obj) => {
+    const row = headers
+      .map((hdr) => JSON.stringify(obj[hdr], null, 2))
+      .join(",");
+    rows.push(row);
+  });
+
+  const joinedRows = rows.join("\n");
+
+  return joinedRows;
+}
+
+const supabase = createClientComponentClient({
+  supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_KEY,
+  supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+});
+
+export function PolicyDataTable({ project }: { project: string }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [rls, setRls] = React.useState<RLSPolicy[]>([]);
+  const [rowSelection, setRowSelection] = React.useState({});
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
 
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
+  );
   const rlsFetching = async () => {
     const resp = await fetch("/api/rls", {
       method: "POST",
@@ -287,21 +314,23 @@ export function PolicyDataTable() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        name: "test",
-        description: "test",
+        name: project,
       }),
     });
 
     const data = await resp.json();
 
     setRls(data);
-    console.log(data);
-  };
+    const { data: user } = await supabase.auth.getUser();
+    const file = jsonToCSV(data, project, user.user.id);
 
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
-  const [rowSelection, setRowSelection] = React.useState({});
+    const element = document.createElement("a");
+    const fileBlob = new Blob([file], { type: "text/plain" });
+    element.href = URL.createObjectURL(fileBlob);
+    element.download = "rls.csv";
+    document.body.appendChild(element);
+    element.click();
+  };
 
   const table = useReactTable({
     data: rls,

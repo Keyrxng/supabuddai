@@ -16,7 +16,7 @@ import { Copy, MoveRight } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 
 export default async function Page(params: { [x: string]: never }) {
-  const project = params.params["project"];
+  const project: string = params.params["project"];
   const cookieStore = cookies();
 
   const supabase = createServerComponentClient({
@@ -77,17 +77,14 @@ END;`;
       required: true,
     },
     {
-      name: "Aggregrate your RLS rules",
+      name: "Aggregrate your data",
       description:
-        "This will allow SupaBuddAI to understand how your database should be protected.",
+        "This will allow SupaBuddAI to gather all of your RLS rules and the database schema types.",
+      href: `https://supabase.com/dashboard/project/${db[0].db_ref}/database/functions`,
+      action: "Aggregate",
       required: true,
     },
-    {
-      name: "Aggregrate your Schema",
-      description:
-        "This will allow SupaBuddAI to understand how your database is structured.",
-      required: true,
-    },
+
     {
       name: "Begin a new workflow",
       description:
@@ -95,6 +92,35 @@ END;`;
       required: false,
     },
   ];
+
+  const handleAggregation = async () => {
+    const rlsResp = await fetch("/api/rls", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name: project,
+      }),
+    });
+
+    const rlsData = await rlsResp.json();
+
+    const schemaResp = await fetch("/api/dbtypes", {
+      method: "POST",
+      headers: {
+        "Content-Type": "plain/text",
+      },
+      body: JSON.stringify({
+        name: project,
+      }),
+    });
+
+    const schemaData = await schemaResp.json();
+
+    if (rlsData && schemaData) {
+    }
+  };
 
   return (
     <div className="m-12 grid grid-cols-3 justify-between gap-8">
@@ -185,7 +211,7 @@ END;`;
       </div>
 
       <div className="col-span-2">
-        <RLSPoliciesList />
+        <RLSPoliciesList className="" project={project} />
       </div>
       <div className="col-span-1">
         <SchemaTable />
