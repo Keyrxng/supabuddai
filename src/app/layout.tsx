@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import "@radix-ui/themes/styles.css";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { Theme } from "@radix-ui/themes";
+import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -41,38 +45,43 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <main className="min-h-screen p-4 ">
-          <div className="grid grid-cols-12 min-h-screen ">
-            <div className="col-span-12 flex items-center sticky w-full justify-between border-b">
-              <div className="border-r h-16 w-64 p-4 flex justify-between align-middle text-center">
-                <Image src="/next.svg" alt="Logo" width={64} height={64} />
-                <div className="font-bold text-xl ">Keyrxng</div>
-              </div>
-              <div className="col-span-12">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center">
-                    <Button className="mr-4">Search</Button>
-                    <Button className="mr-4">Notifications</Button>
-                    <Button className="mr-4">Settings</Button>
+        <Theme>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <main className="min-h-screen p-4 ">
+              <div className="grid grid-cols-12 min-h-screen ">
+                <div className="col-span-12 flex items-center sticky w-full justify-between border-b">
+                  <div className="border-r h-16 w-64 p-4 flex justify-between align-middle text-center">
+                    <Image src="/next.svg" alt="Logo" width={64} height={64} />
+                    <div className="font-bold text-xl ">Keyrxng</div>
+                  </div>
+                  <div className="col-span-12">
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center">
+                        <Button className="mr-4">Search</Button>
+                        <Button className="mr-4">Notifications</Button>
+                        <Button className="mr-4">Settings</Button>
+                        <ThemeToggle />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="ml-[265px] mt-16 absolute col-span-12 text-2xl font-bold w-auto">
+                  {children}
+                </div>
+                <div className="w-64 border-r h-screen p-4 ">
+                  <div className="flex flex-col">
+                    {navItems.map((item) => (
+                      <a key={item.name} href={item.href} className=" mb-4">
+                        {item.name}
+                      </a>
+                    ))}
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div className="ml-[265px] mt-16 absolute col-span-12 text-2xl font-bold">
-              {children}
-            </div>
-            <div className="w-64 border-r h-screen p-4 ">
-              <div className="flex flex-col">
-                {navItems.map((item) => (
-                  <a key={item.name} href={item.href} className=" mb-4">
-                    {item.name}
-                  </a>
-                ))}
-              </div>
-            </div>
-          </div>
-        </main>
+            </main>
+          </ThemeProvider>
+        </Theme>
       </body>
     </html>
   );
