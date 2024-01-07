@@ -1,17 +1,21 @@
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
 
-import type { Database } from "@/lib/database.types";
-
 export async function POST(request: Request) {
+  console.log("POST /api/auth/signup");
+  const body = await request.json();
+  console.log("body", body);
+
+  const { email, password } = body;
+
   const requestUrl = new URL(request.url);
-  const formData = await request.formData();
-  const email = String(formData.get("email"));
-  const password = String(formData.get("password"));
+  console.log("request.url", requestUrl);
+
   const cookieStore = cookies();
-  const supabase = createRouteHandlerClient<Database>({
+  const supabase = createRouteHandlerClient({
     cookies: () => cookieStore,
   });
+
   try {
     const { data: user, error } = await supabase.auth.signUp({
       email,

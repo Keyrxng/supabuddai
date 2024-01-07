@@ -5,40 +5,40 @@
 @layer base {
   :root {
     /* Foreground and Background Colors */
-    --foreground-rgb: 33, 33, 33;  /* Dark Grey */
-    --background-start-rgb: 250, 250, 250;  /* Light Grey */
-    --background-end-rgb: 255, 255, 255;  /* White */
+    --foreground-rgb: 255, 255, 255;  /* White */
+    --background-start-rgb: 33, 33, 33;  /* Dark Grey */
+    --background-end-rgb: 33, 33, 33;  /* Dark Grey */
 
     /* Primary Color Scheme */
-    --background: hsl(0, 0%, 98%);
-    --foreground: hsl(0, 0%, 13%);
+    --background: hsl(0, 0%, 13%);
+    --foreground: hsl(0, 0%, 98%);
 
-    --card: hsl(0, 0%, 100%);
-    --card-foreground: hsl(0, 0%, 13%);
+    --card: hsl(0, 0%, 18%);
+    --card-foreground: hsl(0, 0%, 98%);
  
-    --popover: hsl(0, 0%, 100%);
-    --popover-foreground: hsl(0, 0%, 13%);
+    --popover: hsl(0, 0%, 18%);
+    --popover-foreground: hsl(0, 0%, 98%);
  
     /* Supabase Blue */
     --primary: hsl(207, 90%, 54%);
     --primary-foreground: hsl(0, 0%, 100%);
 
     /* Secondary Colors */
-    --secondary: hsl(207, 90%, 94%);
-    --secondary-foreground: hsl(207, 90%, 54%);
+    --secondary: hsl(207, 90%, 34%);
+    --secondary-foreground: hsl(207, 90%, 94%);
  
-    --muted: hsl(207, 90%, 94%);
-    --muted-foreground: hsl(207, 90%, 34%);
+    --muted: hsl(207, 90%, 34%);
+    --muted-foreground: hsl(207, 90%, 94%);
  
-    --accent: hsl(207, 90%, 94%);
-    --accent-foreground: hsl(207, 90%, 54%);
+    --accent: hsl(207, 90%, 34%);
+    --accent-foreground: hsl(207, 90%, 94%);
  
     /* Destructive or Alert Colors */
     --destructive: hsl(0, 79%, 63%);
     --destructive-foreground: hsl(0, 0%, 100%);
 
     /* Borders and Inputs */
-    --border: hsl(0, 0%, 86%);
+    --border: hsl(240,1%,27%);
     --input: hsl(0, 0%, 86%);
     --ring: hsl(207, 90%, 54%);
  
@@ -47,16 +47,17 @@
   }
 }
 
- 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
 
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
 
 
 @media (prefers-color-scheme: dark) {
@@ -95,7 +96,7 @@
     --destructive-foreground: hsl(0, 0%, 100%);
 
     /* Borders and Inputs */
-    --border: hsl(0, 0%, 86%);
+    --border: hsl(240,1%,27%);
     --input: hsl(0, 0%, 86%);
     --ring: hsl(207, 90%, 54%);
  
@@ -103,13 +104,62 @@
     --radius: 0.5rem;
   }
 }
+::-webkit-scrollbar {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+ 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+@keyframes nudgeRight {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(10px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes nudgeDown {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(10px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes moveRightFixed {
+  0% {
+    transform: translateX(0%);
+  }
+
+  100% {
+    transform: translateX(50%);
+  }
+}
+
+.animate-nudge-down {
+  animation: nudgeDown 1s ease-in-out;
+}
+
+.animate-nudge-right {
+  animation: nudgeRight 1s ease-in-out;
+}
+
+.animate-move-right-fixed {
+  animation: moveRightFixed 1s ease-in forwards;
 }

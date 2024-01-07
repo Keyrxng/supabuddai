@@ -1,13 +1,23 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import "@radix-ui/themes/styles.css";
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Theme } from "@radix-ui/themes";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { BadgeHelp, Menu, UserCircle, Workflow } from "lucide-react";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import { ConnectedBlinker } from "@/components/connectedBlinker";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,6 +29,7 @@ export const metadata: Metadata = {
 const navItems = [
   {
     name: "Projects",
+    icon: Workflow,
     children: [
       {
         name: "All projects",
@@ -28,12 +39,19 @@ const navItems = [
     href: "/projects",
   },
   {
-    name: "RLS Policies",
-    href: "/rls-policies",
-  },
-  {
-    name: "Test Execution",
-    href: "/test-execution",
+    name: "Help",
+    icon: BadgeHelp,
+    children: [
+      {
+        name: "Docs",
+        href: "/help/docs",
+      },
+      {
+        name: "Support",
+        href: "/help/support",
+      },
+    ],
+    href: "/help",
   },
 ];
 
@@ -42,46 +60,116 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const LargeScreenNav = (
+    <div className="hidden lg:block w-64 border-r h-screen p-4">
+      <div className="flex flex-col h-full">
+        {navItems.map((item) => (
+          <div
+            key={item.name}
+            className="flex flex-col border-b border-border-200 py-4"
+          >
+            <div className="font-bold text-xl text-neutral-500/50">
+              {item.name}
+            </div>
+            {item.children?.map((child) => (
+              <a
+                key={child.name}
+                href={child.href}
+                className="ml-4 font-bold text-neutral-500"
+              >
+                {child.name}
+              </a>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const SmallScreenNav = (
+    <>
+      <div className="lg:hidden w-16 border-r h-screen p-4">
+        <Drawer>
+          <DrawerTrigger>
+            <Menu />
+          </DrawerTrigger>
+          <DrawerContent className="w-screen px-4 space-x-2">
+            <DrawerHeader>
+              <DrawerTitle></DrawerTitle>
+              <DrawerDescription>
+                This action cannot be undone.
+              </DrawerDescription>
+            </DrawerHeader>
+
+            {navItems.map((item) => (
+              <div
+                key={item.name}
+                className="flex flex-col border-b border-border-200 py-4"
+              >
+                <div className="font-bold text-xl text-neutral-500/50">
+                  {item.icon && (
+                    <span className="mr-2 flex m-2 gap-4">
+                      <item.icon />
+                      {item.name}
+                    </span>
+                  )}
+                </div>
+                {item.children?.map((child) => (
+                  <a
+                    key={child.name}
+                    href={child.href}
+                    className="ml-4 font-bold text-neutral-500"
+                  >
+                    {child.name}
+                  </a>
+                ))}
+              </div>
+            ))}
+            <DrawerFooter>
+              <Button>Submit</Button>
+              <DrawerClose>
+                <Button variant="outline">Cancel</Button>
+              </DrawerClose>
+            </DrawerFooter>
+          </DrawerContent>
+        </Drawer>
+      </div>
+    </>
+  );
+
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Theme>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <main className="min-h-screen p-4 ">
-              <div className="grid grid-cols-12 min-h-screen ">
-                <div className="col-span-12 flex items-center sticky w-full justify-between border-b">
-                  <div className="border-r h-16 w-64 p-4 flex justify-between align-middle text-center">
-                    <Image src="/next.svg" alt="Logo" width={64} height={64} />
-                    <div className="font-bold text-xl ">Keyrxng</div>
-                  </div>
-                  <div className="col-span-12">
-                    <div className="flex justify-between items-center">
-                      <div className="flex items-center">
-                        <Button className="mr-4">Search</Button>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <main className="min-h-screen">
+            <div className="grid grid-cols-12 min-h-screen ">
+              <div className="col-span-12 flex items-center sticky w-full justify-between border-b">
+                <div className="border-r h-16 lg:w-64 w-16 p-4 flex justify-between align-middle text-center">
+                  <Image src="/next.svg" alt="Logo" width={64} height={64} />
+                  <div className="font-bold text-xl "></div>
+                </div>
+                <div className="col-span-12">
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center">
+                      {/* <Button className="mr-4">Search</Button>
                         <Button className="mr-4">Notifications</Button>
-                        <Button className="mr-4">Settings</Button>
-                        <ThemeToggle />
-                      </div>
+                        <Button className="mr-4">Settings</Button> */}
+                      <ConnectedBlinker />
+                      <ThemeToggle />
                     </div>
                   </div>
                 </div>
-
-                <div className="ml-[265px] mt-16 absolute col-span-12 text-2xl font-bold w-auto">
-                  {children}
-                </div>
-                <div className="w-64 border-r h-screen p-4 ">
-                  <div className="flex flex-col">
-                    {navItems.map((item) => (
-                      <a key={item.name} href={item.href} className=" mb-4">
-                        {item.name}
-                      </a>
-                    ))}
-                  </div>
-                </div>
               </div>
-            </main>
-          </ThemeProvider>
-        </Theme>
+
+              <div className="ml-8 lg:ml-[265px] mt-16 absolute w-auto">
+                {children}
+              </div>
+
+              {LargeScreenNav}
+              {SmallScreenNav}
+            </div>
+          </main>
+        </ThemeProvider>
       </body>
     </html>
   );
