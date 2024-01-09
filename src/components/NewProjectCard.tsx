@@ -1,26 +1,23 @@
-import * as React from "react";
+"use client"
 
-import { Button } from "@/components/ui/button";
-import { CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import * as React from "react"
 
-/* ywaeexoevxxjquwlhfjx
- https://ywaeexoevxxjquwlhfjx.supabase.co
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl3YWVleG9ldnh4anF1d2xoZmp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDE1MTI0NzAsImV4cCI6MjAxNzA4ODQ3MH0.47_j0Q-nfP1bvG8wUP5RAsrpQKZMuZkv_rPvmjVIXHM
-*/
+import { Button } from "@/components/ui/button"
+import { CardContent } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 export function NewProjectCard() {
   const handleSubmit = (e) => {
-    e.preventDefault();
-    const api = "/api/projects/create-project";
+    e.preventDefault()
+    const api = "/api/projects/create-project"
     const {
       "db-name": name,
       "db-ref": ref,
       "db-url": url,
       "db-key": key,
       "db-pass": pass,
-    } = e.target.elements;
+    } = e.target.elements
 
     fetch(api, {
       method: "POST",
@@ -35,8 +32,8 @@ export function NewProjectCard() {
     })
       .then((res) => res.json())
       .then((res) => console.log(res))
-      .catch((err) => console.error(err));
-  };
+      .catch((err) => console.error(err))
+  }
 
   return (
     <div className="max-w-xs lg:max-w-7xl w-full ">
@@ -92,12 +89,12 @@ export function NewProjectCard() {
           <Button
             onSubmit={(e) => handleSubmit(e)}
             type="submit"
-            className="hover:bg-slate-600 mt-2"
+            className="hover:bg-slate-600 mt-2 w-full"
           >
             Connect
           </Button>
         </form>
       </CardContent>
     </div>
-  );
+  )
 }

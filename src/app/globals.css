@@ -107,8 +107,29 @@ body {
 ::-webkit-scrollbar {
   width: 0.5rem;
   height: 0.5rem;
+  border-radius: 0.5rem;
+  background: #202631;
+
+}
+::-webkit-scrollbar-track {
+  border-radius: 0.5rem;
+  background: #202631;
 }
 
+::-webkit-scrollbar-track:hover {
+  border-radius: 0.5rem;
+  background: #202931;
+}
+
+/* hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #435570;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2e3a4d;
+  border-radius: 0.5rem;
+}
 
 
 @layer base {

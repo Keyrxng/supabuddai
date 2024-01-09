@@ -1,26 +1,26 @@
-import { SupabaseClient } from "@supabase/supabase-js";
+import { SupabaseClient } from "@supabase/supabase-js"
 
 export async function POST(request: Request) {
-  // const formData = await request.formData();
-  // const db_url = String(formData.get("db_url"));
-  // const db_key = String(formData.get("db_key"));
-  // const projectId = String(formData.get("projectId"));
+  const { db_url, db_key } = await request.json()
+  const func = "get_all_rls_policies"
 
-  const func = "get_all_rls_policies";
-  const schema = "public";
-  const key =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl3YWVleG9ldnh4anF1d2xoZmp4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDE1MTI0NzAsImV4cCI6MjAxNzA4ODQ3MH0.47_j0Q-nfP1bvG8wUP5RAsrpQKZMuZkv_rPvmjVIXHM";
-  const url = "https://ywaeexoevxxjquwlhfjx.supabase.co";
-  const temp = "ywaeexoevxxjquwlhfjx";
+  if (!db_url || !db_key) {
+    return new Response(
+      JSON.stringify({ error: "db_url and db_key are required" }),
+      {
+        status: 400,
+        headers: {
+          "Content-Type": "text/plain",
+        },
+      }
+    )
+  }
+  const supa = new SupabaseClient(db_url, db_key)
 
-  const supa = new SupabaseClient(url, key);
-
-  const { data, error } = await supa.rpc(func);
-
-  console.log("data", data);
+  const { data, error } = await supa.rpc(func)
 
   if (error) {
-    console.log("error", error);
+    console.log("error", error)
   }
 
   return new Response(JSON.stringify(data), {
@@ -28,5 +28,5 @@ export async function POST(request: Request) {
     headers: {
       "Content-Type": "text/plain",
     },
-  });
+  })
 }

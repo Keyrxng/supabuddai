@@ -1,34 +1,38 @@
-"use client";
-import React, { useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useState } from "react";
-import { NewProjectCard } from "./NewProjectCard";
-import { MoveDown, MoveRight } from "lucide-react";
-import { LoginCard } from "./Logincard.tsx";
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-type Props = {};
+"use client"
+
+import React, { useEffect, useState } from "react"
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { MoveDown, MoveRight } from "lucide-react"
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+
+import { LoginCard } from "./Logincard.tsx"
+import { NewProjectCard } from "./NewProjectCard"
+
+type Props = {}
 
 const supabase = createClientComponentClient({
   supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!,
-});
+})
 
 function NoUserHero({}: Props) {
-  const [isBlurred, setIsBlurred] = useState(true);
-  const [hover, setHover] = useState(false);
+  const [isBlurred, setIsBlurred] = useState(true)
+  const [hover, setHover] = useState(false)
 
   useEffect(() => {
     async function load() {
-      const { data, error } = await supabase.auth.getSession();
-      if (data) {
-        setIsBlurred(false);
+      const { data, error } = await supabase.auth.getSession()
+      console.log(data)
+      if (data.session) {
+        setIsBlurred(false)
       } else {
-        setIsBlurred(true);
+        setIsBlurred(true)
       }
     }
 
-    load();
-  }, []);
+    load()
+  }, [])
 
   return (
     <div className="grid-cols-1 flex-row items-center object-center align-middle gap-4 max-w-xs lg:max-w-5xl">
@@ -44,21 +48,48 @@ function NoUserHero({}: Props) {
           <CardContent className="flex flex-col">
             <div className="flex flex-col items-center text-center text-gap-4">
               <CardContent className="w-full grid grid-cols-1 lg:grid-cols-3 gap-4">
-                <ul>
-                  <li className="text-lg text-muted">
-                    1. Register your account with us to get started.
-                  </li>
-                </ul>
-                <ul>
-                  <li className="text-lg text-muted">
-                    2. Create a project pointing to your Supabase database.
-                  </li>
-                </ul>
-                <ul>
-                  <li className="text-lg text-muted">
-                    3. Allow your SupaBuddAi to do it&apos;s magic.
-                  </li>
-                </ul>
+                {isBlurred && (
+                  <>
+                    <ul>
+                      <li className="text-lg text-muted">
+                        1. Register your account with us to get started.
+                      </li>
+                    </ul>
+                    <ul>
+                      <li className="text-lg text-muted">
+                        2. Create a new project pointing to your Supabase
+                        database.
+                      </li>
+                    </ul>
+                    <ul>
+                      <li className="text-lg text-muted">
+                        3. Allow SupaBuddAi to aggregate your database schema
+                        and RLS rules.
+                      </li>
+                    </ul>
+                  </>
+                )}
+                {!isBlurred && (
+                  <>
+                    <ul>
+                      <li className="text-lg text-muted">
+                        1. Create a new project pointing to your Supabase
+                        database.
+                      </li>
+                    </ul>
+                    <ul>
+                      <li className="text-lg text-muted">
+                        2. Allow SupaBuddAi to aggregate your database schema
+                        and RLS rules.
+                      </li>
+                    </ul>
+                    <ul>
+                      <li className="text-lg text-muted">
+                        3. Interact with your project to get started.
+                      </li>
+                    </ul>
+                  </>
+                )}
               </CardContent>
             </div>
           </CardContent>
@@ -78,7 +109,7 @@ function NoUserHero({}: Props) {
               <CardContent className="flex flex-col">
                 <div className="flex flex-col items-center text-center text-gap-4">
                   <p className="text-sm text-muted"></p>
-                  <LoginCard />
+                  <LoginCard className="" setNeedsReload={() => {}} />
                 </div>
               </CardContent>
             </Card>
@@ -112,7 +143,7 @@ function NoUserHero({}: Props) {
           <CardContent className="flex flex-col">
             <div className="flex flex-col items-center text-center text-gap-4">
               <p className="text-sm text-muted">
-                To get started with SupabuddAI you need to create a project.
+                To get started with SupabuddAi you need to create a project.
               </p>
               <NewProjectCard />
             </div>
@@ -120,7 +151,7 @@ function NoUserHero({}: Props) {
         </Card>
       </div>
     </div>
-  );
+  )
 }
 
-export default NoUserHero;
+export default NoUserHero

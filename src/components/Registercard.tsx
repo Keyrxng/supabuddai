@@ -1,54 +1,40 @@
 import { Dispatch, SetStateAction } from "react"
-import { toast } from "sonner"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-export function LoginCard({
+export function RegisterCard({
   className,
   setNeedsReload,
 }: {
   className: string
   setNeedsReload: Dispatch<SetStateAction<boolean>>
 }) {
-  const loginApi = "/api/auth/login"
+  const registerApi = "/api/auth/signup"
 
-  const login = async (email: string, password: string) => {
-    const response = await fetch(loginApi, {
+  const register = async (name: string, email: string, password: string) => {
+    const response = await fetch(registerApi, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ name, email, password }),
     })
-
-    if (response.status === 500) {
-      toast.error("Login failed")
-      return false
-    }
-
-    if (response.status === 420) {
-      toast.error("Invalid credentials")
-      return false
-    }
-
+    const data = await response.json()
     if (response.ok) {
-      window.location.href = window.location.href
-      return true
+      return data
     } else {
-      toast.error("Login failed")
-      return false
+      throw new Error(data.error)
     }
   }
 
-  const loginUser = async (email: string, password: string) => {
+  const registerUser = async (
+    name: string,
+    email: string,
+    password: string
+  ) => {
     try {
-      const bool = await login(email, password)
-
-      if (bool) {
-        setNeedsReload(true)
-        toast.success("Logged in successfully")
-      }
+      await register(name, email, password)
     } catch (error) {
       console.error(error)
     }
@@ -56,9 +42,8 @@ export function LoginCard({
 
   const handleSubmit = (event: any) => {
     event.preventDefault()
-    console.log("logging in...")
-    const { email, password } = event.target.elements
-    loginUser(email.value, password.value)
+    const { name, email, password } = event.target.elements
+    registerUser(name.value, email.value, password.value)
   }
 
   return (
@@ -75,6 +60,11 @@ export function LoginCard({
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4">
             <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="name">Name</Label>
+              <Input id="name" />
+            </div>
+
+            <div className="flex flex-col space-y-1.5">
               <Label htmlFor="email">Email</Label>
               <Input id="email" />
             </div>
@@ -89,7 +79,7 @@ export function LoginCard({
             type="submit"
             className="hover:bg-gray-700/75 my-2 items-center justify-center w-full"
           >
-            Login
+            Register
           </Button>
         </form>
       </div>

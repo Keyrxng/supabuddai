@@ -213,45 +213,26 @@ import { Checkbox } from "./ui/checkbox"
 //   );
 // }
 
-export type RLSPolicy = {
-  schema_name: string
-  table_name: string
-  policy_name: string
-  policy_condition: string | null
-  policy_check: string | null
-  command: string
-  role: string
+export type TestProps = {
+  schema: string
+  table: string
+  policy: string
+  condition_test: string
+  expected_condition: string
+  check_test: string
+  expected_check: string
 }
 
-export const columns: ColumnDef<RLSPolicy>[] = [
-  {
-    accessorKey: "schema_name",
-    header: "Schema",
-  },
-  {
-    accessorKey: "table_name",
-    header: "Table",
-  },
-  {
-    accessorKey: "policy_name",
-    header: "Policy Name",
-  },
-  {
-    accessorKey: "policy_condition",
-    header: "Policy Condition",
-  },
-  {
-    accessorKey: "policy_check",
-    header: "Policy Check",
-  },
-  {
-    accessorKey: "command",
-    header: "Command",
-  },
-  {
-    accessorKey: "role",
-    header: "Role",
-  },
+/**
+ * <th className="px-4 py-2">Schema</th>
+      //       <th className="px-4 py-2">Table</th>
+      //       <th className="px-4 py-2">Policy</th>
+      //       <th className="px-4 py-2">Condition Test</th>
+      //       <th className="px-4 py-2">Expected Condition</th>
+      //       <th className="px-4 py-2">Check Test</th>
+      //       <th className="px-4 py-2">Expected Check</th>
+ */
+export const columns: ColumnDef<TestProps>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -273,6 +254,34 @@ export const columns: ColumnDef<RLSPolicy>[] = [
     ),
     enableSorting: false,
     enableHiding: false,
+  },
+  {
+    accessorKey: "schema_name",
+    header: "Schema",
+  },
+  {
+    accessorKey: "table_name",
+    header: "Table",
+  },
+  {
+    accessorKey: "policy_name",
+    header: "Policy",
+  },
+  {
+    accessorKey: "policy_condition",
+    header: "Condition Test",
+  },
+  {
+    accessorKey: "policy_check",
+    header: "Check Test",
+  },
+  {
+    accessorKey: "command",
+    header: "Command",
+  },
+  {
+    accessorKey: "role",
+    header: "Role",
   },
 ]
 
@@ -299,17 +308,9 @@ const supabase = createClientComponentClient({
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
 })
 
-export function PolicyDataTable({
-  db_url,
-  db_key,
-  project,
-}: {
-  project: string
-  db_url: string
-  db_key: string
-}) {
+export function TestSuiteDataTable({ work }: { work: any }) {
   const [sorting, setSorting] = React.useState<SortingState>([])
-  const [rls, setRls] = React.useState<RLSPolicy[]>([])
+  const [rls, setRls] = React.useState<TestProps[]>([])
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
@@ -317,32 +318,8 @@ export function PolicyDataTable({
     []
   )
 
-  const rlsFetching = async () => {
-    const resp = await fetch("/api/rls", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        db_url,
-        db_key,
-      }),
-    })
-
-    const data = await resp.json()
-
-    setRls(data)
-    const { data: user } = await supabase.auth.getUser()
-    const file = jsonToCSV(data, project, user.user?.id)
-
-    const element = document.getElementById("rls-download")
-    const fileBlob = new Blob([file], { type: "text/plain" })
-    element.href = URL.createObjectURL(fileBlob)
-    element.download = `${project}-rls.csv`
-  }
-
   const table = useReactTable({
-    data: rls,
+    data: work,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -361,30 +338,16 @@ export function PolicyDataTable({
   })
 
   return (
-    <div className="grid relative gap-4 h-full max-h-[350px] w-auto overflow-y-auto">
+    <div className="grid relative gap-4 h-full  w-auto ">
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
 
-        <Button
-          variant="outline"
-          onClick={() => rlsFetching()}
-          className="right-0 "
-        >
+        <Button variant="outline" className="right-0 ">
           Aggregrate
         </Button>
-        <a id="rls-download" href="">
-          <Button
-            variant="outline"
-            className="right-0 "
-            disabled={rls.length === 0}
-          >
-            Download
-          </Button>
-        </a>
-
         <div className="space-x-2">
           <Button
             variant="outline"
@@ -441,3 +404,30 @@ export function PolicyDataTable({
     </div>
   )
 }
+
+/**
+ * // const rlsFetching = async () => {
+  //   const resp = await fetch("/api/rls", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({
+  //       name: project,
+  //     }),
+  //   });
+
+  //   const data = await resp.json();
+
+  //   setRls(data);
+  //   const { data: user } = await supabase.auth.getUser();
+  //   const file = jsonToCSV(data, project, user.user.id);
+
+  //   const element = document.createElement("a");
+  //   const fileBlob = new Blob([file], { type: "text/plain" });
+  //   element.href = URL.createObjectURL(fileBlob);
+  //   element.download = "rls.csv";
+  //   document.body.appendChild(element);
+  //   element.click();
+  // };
+ */
