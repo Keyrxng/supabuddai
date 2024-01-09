@@ -303,13 +303,15 @@ export function PolicyDataTable({
   db_url,
   db_key,
   project,
+  pols,
 }: {
   project: string
   db_url: string
   db_key: string
+  pols?: any
 }) {
   const [sorting, setSorting] = React.useState<SortingState>([])
-  const [rls, setRls] = React.useState<RLSPolicy[]>([])
+  const [rls, setRls] = React.useState<RLSPolicy[]>(pols)
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})

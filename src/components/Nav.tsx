@@ -111,27 +111,29 @@ function Nav({ children }: Props) {
   ]
 
   const LargeScreenNav = (
-    <div className="hidden lg:block w-64 border-r h-screen p-4">
+    <div className="hidden lg:block w-64 border-r border-gray-800 h-[110vh]">
       <div className="flex flex-col h-full">
         {user ? (
           <>
             {navItems.map((item) => (
               <div
                 key={item.name}
-                className="flex flex-col border-b border-border-200 py-4"
+                className="flex flex-col border-b border-gray-800 py-4"
               >
-                <div className="font-bold text-xl text-neutral-500/50">
-                  {item.name}
+                <div className="font-bold flex flex-col text-lg p-2 text-neutral-500/50">
+                  <div className="font-bold text-xl text-neutral-500/50">
+                    {item.name}
+                  </div>
+                  {item.children?.map((child) => (
+                    <a
+                      key={child.name}
+                      href={child.href}
+                      className="ml-4 font-bold text-neutral-500"
+                    >
+                      {child.name}
+                    </a>
+                  ))}
                 </div>
-                {item.children?.map((child) => (
-                  <a
-                    key={child.name}
-                    href={child.href}
-                    className="ml-4 font-bold text-neutral-500"
-                  >
-                    {child.name}
-                  </a>
-                ))}
               </div>
             ))}
           </>
@@ -140,7 +142,7 @@ function Nav({ children }: Props) {
             {noUserNavItems.map((item) => (
               <div
                 key={item.name}
-                className="flex flex-col border-b border-border-200 py-4"
+                className="flex flex-col border-b border-gray-800 py-4"
               >
                 <div className="font-bold text-xl text-neutral-500/50">
                   {item.name}
@@ -164,7 +166,7 @@ function Nav({ children }: Props) {
 
   const SmallScreenNav = (
     <>
-      <div className="lg:hidden w-16 border-r h-screen p-4">
+      <div className="lg:hidden w-16 border-r border-gray-800 h-screen p-4">
         <Drawer>
           <DrawerTrigger>
             <Menu />
@@ -182,7 +184,7 @@ function Nav({ children }: Props) {
                 {navItems.map((item) => (
                   <div
                     key={item.name}
-                    className="flex flex-col border-b border-border-200 py-4"
+                    className="flex flex-col border-b border-gray-800 py-4"
                   >
                     <div className="font-bold text-xl text-neutral-500/50">
                       {item.icon && (
@@ -209,7 +211,7 @@ function Nav({ children }: Props) {
                 {noUserNavItems.map((item) => (
                   <div
                     key={item.name}
-                    className="flex flex-col border-b border-border-200 py-4"
+                    className="flex flex-col border-b border-gray-800 py-4"
                   >
                     <div className="font-bold text-xl text-neutral-500/50">
                       {item.icon && (
@@ -249,8 +251,8 @@ function Nav({ children }: Props) {
     <>
       {/* TopNav */}
       <div className="grid grid-cols-12 min-h-screen ">
-        <div className="col-span-12 flex items-center sticky w-full justify-between border-b">
-          <div className="border-r h-16 lg:w-64 w-16 flex justify-between align-middle text-center">
+        <div className="col-span-12 flex items-center sticky w-full justify-between border-gray-800 border-b">
+          <div className="border-r border-gray-800 h-16 lg:w-64 w-16 flex justify-between align-middle text-center">
             <div className="w-full">
               <Image
                 src="/supabuddai.svg"
@@ -264,9 +266,8 @@ function Nav({ children }: Props) {
           <div className="col-span-12">
             <div className="flex justify-between items-center">
               <div className="flex items-center">
-                {/* <Button className="mr-4">Search</Button>
-                        <Button className="mr-4">Notifications</Button>
-                        <Button className="mr-4">Settings</Button> */}
+                <Button className="mr-4">Search</Button>
+                <Button className="mr-4">Notifications</Button>
                 <ConnectedBlinker />
                 <ThemeToggle />
               </div>

@@ -24,30 +24,20 @@ export default async function Page(params: { [x: string]: never }) {
     .select("*")
     .eq("id", assistantId)
 
+  const { data: threads, error: threadsErr } = await supabase
+    .from("threads")
+    .select("*")
+    .eq("assistant_id", assistantResp[0].assistant.id)
+
   if (assistantError) {
     console.error("assistantError: ", assistantError)
     return
   }
 
   return (
-    <div className="m-12 grid grid-cols-3 h-screen gap-4">
-      <AgentHero assistantResp={assistantResp} />
-      <RunDataTable assistantResp={assistantResp} />
+    <div className="m-12 max-h-screen">
+      <AgentHero assistantResp={assistantResp} threads={threads} />
+      <RunDataTable assistantResp={assistantResp} threads={threads} />
     </div>
   )
-}
-
-{
-  /* 
-            assistant: {
-      tools: [Array],
-      object: 'assistant',
-      file_ids: [Array],
-      metadata: [Object],
-      created_at: 1704735367,
-      description: 'SupaBuddAi, a Supabase RLS security expert.',
-      instructions: '\n' +
-        'You are SupaBuddAi, a Supabase RLS security expert, you are equipped to handle tasks involving the review and penetration test planning of RLS policies using database schemas in TypeScript. You will analyse the complete TypeScript type schema and all RLS policies, including schema name, table name, policy name, condition, check, command, and role. You will generate JSON structures detailing the necessary tests for each policy. These JSONs will contain schema, table, policy, and test context, describing how each policy should be tested against considering the parameters of the RLS policy in-scope.\n'
-    },
-     */
 }

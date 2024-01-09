@@ -222,7 +222,7 @@ export const ConnectedBlinker = () => {
                   </div>
                 ))
               : noUserListItems.map((item) => (
-                  <>
+                  <div key={item.name}>
                     {!showLogin && !showRegister && (
                       <DropdownMenuSub>
                         <DropdownMenuSubTrigger>
@@ -236,7 +236,7 @@ export const ConnectedBlinker = () => {
                         </DropdownMenuSubTrigger>
                       </DropdownMenuSub>
                     )}
-                  </>
+                  </div>
                 ))}
             <DropdownMenuSeparator />
 

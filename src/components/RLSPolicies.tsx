@@ -6,11 +6,13 @@ const RLSPoliciesList = ({
   db_key,
   db_url,
   className,
+  pols,
 }: {
   project: string
   db_key: string
   db_url: string
   className: string
+  pols: any
 }) => {
   return (
     <Card className={`${className}`}>
@@ -18,7 +20,12 @@ const RLSPoliciesList = ({
         <CardTitle>RLS Policies</CardTitle>
       </CardHeader>
       <CardContent className="relative flex flex-col space-y-4">
-        <PolicyDataTable project={project} db_key={db_key} db_url={db_url} />
+        <PolicyDataTable
+          pols={pols}
+          project={project}
+          db_key={db_key}
+          db_url={db_url}
+        />
       </CardContent>
     </Card>
   )

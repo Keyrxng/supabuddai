@@ -3,9 +3,11 @@ import { cookies } from "next/headers"
 import { useRouter } from "next/navigation"
 import { NextResponse } from "next/server"
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
+import { format, parseISO } from "date-fns"
 import { Copy, MoveRight } from "lucide-react"
 import { toast } from "sonner"
 
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -18,6 +20,9 @@ import { NewProjectCard } from "@/components/NewProjectCard"
 import NextBestActions from "@/components/NextBestActions"
 import RLSPoliciesList from "@/components/RLSPolicies"
 import SchemaTable from "@/components/SchemaTable"
+import WorkflowsHeader from "@/components/WorkflowsHeader"
+
+import AgentHero from "./[assistantId]/components/AgentHero"
 
 export default async function Page(params: { [x: string]: never }) {
   const project: string = params.params["project"]
@@ -77,54 +82,76 @@ export default async function Page(params: { [x: string]: never }) {
       pol.polname;
 END;`
 
-  const { data: nba, error: nbaError } = await supabase
+  const { data: assistants, error: nbaError } = await supabase
     .from("assistants")
     .select("*")
-    .eq("user_id", user?.id)
+    .eq("user_id", user?.user.id)
     .eq("project_id", db[0]?.id)
+
+  console.log(
+    "id: ",
+    db[0]?.id,
+    "user_id: ",
+    user?.user.id,
+    "assistant_id: ",
+    assistants[0]?.id
+  )
+  const { data: projReqs, error: projReqsError } = await supabase
+    .from("project_reqs")
+    .select("*")
+    .eq("assistant_id", assistants[0]?.id)
 
   return (
     <div className="m-12 grid grid-cols-3 justify-between gap-8">
-      <NextBestActions project={project} db={db} />
+      <NextBestActions project={project} db={db} assistants={assistants} />
       <div className="grid gap-4 w-sm max-h-[450px] col-span-2">
-        <CardHeader>
-          <CardTitle className="flex gap-2">
-            Database Function{" "}
-            <span>
-              <CopyToClip text={dbfunction} />
-            </span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col">
-          <div
-            data-state="active"
-            data-orientation="horizontal"
-            role="tabpanel"
-            aria-labelledby="radix-:rd:-trigger-code"
-            id="radix-:rd:-content-code"
-            className="ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          >
-            <div className="flex flex-col">
-              <div className="w-full rounded-md [&amp;_pre]:my-0 [&amp;_pre]:max-h-[350px] [&amp;_pre]:overflow-auto">
-                <div data-rehype-pretty-code-fragment="">
-                  <pre
-                    className="mb-4 max-h-[280px] overflow-x-auto rounded-lg border bg-zinc-950  dark:bg-zinc-900"
-                    data-language="tsx"
-                    data-theme="default"
-                  >
-                    <code
-                      className={`relative rounded bg-muted font-mono text-sm`}
-                      data-language="tsx"
-                      data-theme="default"
-                    >
-                      {dbfunction}
-                    </code>
-                  </pre>
+        {assistants?.length == 0 && (
+          <>
+            <CardHeader>
+              <CardTitle className="flex gap-2">
+                Database Function{" "}
+                <span>
+                  <CopyToClip text={dbfunction} />
+                </span>
+              </CardTitle>
+            </CardHeader>
+
+            <CardContent className="flex flex-col">
+              <div
+                data-state="active"
+                data-orientation="horizontal"
+                role="tabpanel"
+                aria-labelledby="radix-:rd:-trigger-code"
+                id="radix-:rd:-content-code"
+                className="ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                <div className="flex flex-col">
+                  <div className="w-full rounded-md [&amp;_pre]:my-0 [&amp;_pre]:max-h-[350px] [&amp;_pre]:overflow-auto">
+                    <div data-rehype-pretty-code-fragment="">
+                      <pre
+                        className="mb-4 max-h-[280px] overflow-x-auto rounded-lg border bg-zinc-950  dark:bg-zinc-900"
+                        data-language="tsx"
+                        data-theme="default"
+                      >
+                        <code
+                          className={`relative rounded bg-muted font-mono text-sm`}
+                          data-language="tsx"
+                          data-theme="default"
+                        >
+                          {dbfunction}
+                        </code>
+                      </pre>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-        </CardContent>
+            </CardContent>
+          </>
+        )}
+
+        {assistants?.length > 0 && (
+          <WorkflowsHeader project={project} assistants={assistants} />
+        )}
       </div>
 
       <div className="col-span-2">
@@ -133,10 +160,11 @@ END;`
           project={project}
           db_key={db[0]?.db_key}
           db_url={db[0]?.db_url}
+          pols={projReqs[0].rls}
         />
       </div>
       <div className="col-span-1">
-        <SchemaTable db_ref={db[0]?.db_ref} />
+        <SchemaTable db_ref={db[0]?.db_ref} schema={projReqs[0].schema} />
       </div>
     </div>
   )

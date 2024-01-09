@@ -8,8 +8,8 @@ import CopyToClip from "./CopyToClip"
 import { Button } from "./ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
 
-function SchemaTable({ db_ref }: { db_ref: string }) {
-  const [types, setTypes] = useState("")
+function SchemaTable({ db_ref, schema }: { db_ref: string; schema?: any }) {
+  const [types, setTypes] = useState(schema)
 
   const handleIt = async () => {
     const resp = await fetch("/api/dbtypes", {

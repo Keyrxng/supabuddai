@@ -15,7 +15,15 @@ const supabase = createClientComponentClient({
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL!,
 })
 
-function NextBestActions({ project, db }: { project: string; db: any }) {
+function NextBestActions({
+  project,
+  db,
+  assistants,
+}: {
+  project: string
+  db: any
+  assistants: any
+}) {
   const [user, setUser] = React.useState(null)
 
   useEffect(() => {
@@ -158,10 +166,32 @@ function NextBestActions({ project, db }: { project: string; db: any }) {
     },
 
     {
-      name: "Begin a new workflow",
+      name: "Create a new workflow",
       description:
         "This will allow SupaBuddAI to begin generating a test suite.",
       required: false,
+    },
+  ]
+
+  const withAgentNBA = [
+    {
+      name: "View most recent workflow run",
+      href: `https://supabase.com/dashboard/projects/${project}/${assistants[0]?.id}`,
+      description: "",
+      required: false,
+    },
+    {
+      name: "View all workflows",
+      description: "",
+      href: `https://supabase.com/dashboard/projects/${project}/workflows`,
+      required: false,
+    },
+    {
+      name: "Create a new workflow",
+      href: `https://supabase.com/dashboard/projects/${project}/${assistants[0]?.id}`,
+      description: "For now, you can only have one workflow per project.",
+      required: false,
+      disabled: true,
     },
   ]
 
@@ -174,45 +204,88 @@ function NextBestActions({ project, db }: { project: string; db: any }) {
       <CardContent className="container flex flex-col">
         <div className="grid grid-flow-dense gap-4">
           <ul className="flex flex-col gap-4">
-            {nextBestActions.map((action) => (
-              <li
-                key={action.name}
-                className={`${
-                  action.required ? "font-bold" : "font-light"
-                } text-sm text-muted`}
-              >
-                <div className="flex flex-row justify-between gap-4">
-                  <div className="flex flex-col">
-                    <span>{action.name}</span>
-                    <span className="text-xs">{action.description}</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <Checkbox />
-                    {action.href ? (
-                      <a
-                        href={action.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-500 hover:underline font-bold"
-                      >
+            {assistants.length == 0 &&
+              nextBestActions.map((action) => (
+                <li
+                  key={action.name}
+                  className={`${
+                    action.required ? "font-bold" : "font-light"
+                  } text-sm text-muted`}
+                >
+                  <div className="flex flex-row justify-between gap-4">
+                    <div className="flex flex-col">
+                      <span>{action.name}</span>
+                      <span className="text-xs">{action.description}</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <Checkbox />
+                      {action.href ? (
+                        <a
+                          href={action.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 hover:underline font-bold"
+                        >
+                          <MoveRight
+                            size={16}
+                            className="hover:translate-x-1 animate-in ease-in-out duration-300"
+                          />
+                        </a>
+                      ) : action.action ? (
                         <MoveRight
                           size={16}
-                          className="hover:translate-x-1 animate-in ease-in-out duration-300"
+                          onClick={() => action.action()}
+                          className="hover:translate-x-1 animate-in ease-in-out duration-300 text-green-500 cursor-pointer"
                         />
-                      </a>
-                    ) : action.action ? (
-                      <MoveRight
-                        size={16}
-                        onClick={() => action.action()}
-                        className="hover:translate-x-1 animate-in ease-in-out duration-300 text-green-500 cursor-pointer"
-                      />
-                    ) : (
-                      <div className="w-4 h-4"></div>
-                    )}
+                      ) : (
+                        <div className="w-4 h-4"></div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </li>
-            ))}
+                </li>
+              ))}
+
+            {assistants.length > 0 &&
+              withAgentNBA.map((action) => (
+                <li
+                  key={action.name}
+                  className={`${
+                    action.required ? "font-bold" : "font-light"
+                  } text-sm text-muted hover:translate-x-1 animate-in ease-in-out duration-300`}
+                >
+                  <div className="flex flex-row justify-between gap-4">
+                    <div className="flex flex-col">
+                      <span>{action.name}</span>
+                      <span className="text-xs">{action.description}</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <Checkbox disabled={action.disabled} />
+                      {action.href ? (
+                        <a
+                          href={action.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 hover:underline font-bold hover:translate-x-1 animate-in ease-in-out duration-300"
+                        >
+                          <MoveRight
+                            size={16}
+                            id="move-right-disabled"
+                            className={` `}
+                          />
+                        </a>
+                      ) : action.action ? (
+                        <MoveRight
+                          size={16}
+                          onClick={() => action.action()}
+                          className="hover:translate-x-1 animate-in ease-in-out duration-300 text-green-500 cursor-pointer"
+                        />
+                      ) : (
+                        <div className="w-4 h-4"></div>
+                      )}
+                    </div>
+                  </div>
+                </li>
+              ))}
           </ul>
         </div>
       </CardContent>
