@@ -22,6 +22,7 @@ export default function RootLayout(params: { children: React.ReactNode }) {
           <main className="min-h-screen">
             <Nav>{params.children}</Nav>
           </main>
+
           <Toaster />
         </ThemeProvider>
       </body>

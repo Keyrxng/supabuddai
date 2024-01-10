@@ -12,23 +12,31 @@ export async function POST(request: Request) {
 
   const { threadId, messageId, fileId } = body
 
+  if (!threadId || !messageId || !fileId) {
+    return new Response(
+      JSON.stringify({ error: "missing threadId, messageId, or fileId" }),
+      {
+        status: 400,
+        headers: {
+          "Content-Type": "text/plain",
+        },
+      }
+    )
+  }
+
   const agent = new Agent(process.env.OPENAI_API_KEY!)
   let resp = null
   try {
     resp = await agent.readFile(threadId, messageId, fileId)
   } catch (err) {
-    console.log("+++++++++++++++++++++++++++++++++")
     console.log(err)
-    console.log("+++++++++++++++++++++++++++++++++")
   }
   let resp2 = null
 
   try {
     resp2 = await agent.readFileString(fileId)
   } catch (err) {
-    console.log("===================================")
     console.log(err)
-    console.log("===================================")
   }
 
   if (resp.error) {

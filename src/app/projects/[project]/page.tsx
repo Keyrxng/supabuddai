@@ -22,8 +22,6 @@ import RLSPoliciesList from "@/components/RLSPolicies"
 import SchemaTable from "@/components/SchemaTable"
 import WorkflowsHeader from "@/components/WorkflowsHeader"
 
-import AgentHero from "./[assistantId]/components/AgentHero"
-
 export default async function Page(params: { [x: string]: never }) {
   const project: string = params.params["project"]
   const cookieStore = cookies()
@@ -88,14 +86,6 @@ END;`
     .eq("user_id", user?.user.id)
     .eq("project_id", db[0]?.id)
 
-  console.log(
-    "id: ",
-    db[0]?.id,
-    "user_id: ",
-    user?.user.id,
-    "assistant_id: ",
-    assistants[0]?.id
-  )
   const { data: projReqs, error: projReqsError } = await supabase
     .from("project_reqs")
     .select("*")

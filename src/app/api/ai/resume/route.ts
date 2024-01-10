@@ -10,17 +10,13 @@ export async function POST(request: Request) {
 
   const body = await request.json()
 
-  const { threadId, runId } = body
+  const { fileIds, assistant_id } = body
 
-  console.log("threadId", threadId)
-  console.log("runId", runId)
   const userId = (await supabase.auth.getUser()).data.user?.id
-
-  if (!userId) return new Response("Unauthorized", { status: 401 })
 
   const agent = new Agent(process.env.OPENAI_API_KEY!)
 
-  const run = await agent.getThreadRuns(threadId, runId)
+  const run = await agent.createMessage(assistant_id, fileIds)
 
   return new Response(JSON.stringify(run), {
     status: 200,

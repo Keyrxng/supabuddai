@@ -13,6 +13,18 @@ export async function POST(request: Request) {
 
   const { threadId, messageId, fileId } = body
 
+  if (!threadId || !messageId || !fileId) {
+    return new Response(
+      JSON.stringify({ error: "missing threadId, messageId, or fileId" }),
+      {
+        status: 400,
+        headers: {
+          "Content-Type": "text/plain",
+        },
+      }
+    )
+  }
+
   const agent = new Agent(process.env.OPENAI_API_KEY!)
   let resp = null
   try {
@@ -24,8 +36,6 @@ export async function POST(request: Request) {
     const resss = await agent.readFileString(fileId)
     resp2 = await resss.json()
   } catch (err) {}
-
-  console.log("resp", resp2)
 
   if (resp.error) {
     return new Response(JSON.stringify(resp), {

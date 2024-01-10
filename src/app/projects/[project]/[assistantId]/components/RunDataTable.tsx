@@ -2,13 +2,26 @@
 
 import { parse } from "path"
 import React, { useCallback, useEffect, useState } from "react"
+import { Label } from "@radix-ui/react-dropdown-menu"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { format, parseISO, set } from "date-fns"
 import { toast } from "sonner"
 
+import { handleViewFile, reformatMessage } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { TestSuiteDataTable } from "@/components/TestSuiteDataTable"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+import { TestGenTable } from "./TestGenTable"
+import { TestPlanTable } from "./TestPlanTable"
+import { Badge } from "@/components/ui/badge"
 
 const supabase = createClientComponentClient({
   supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -16,271 +29,203 @@ const supabase = createClientComponentClient({
 })
 
 function RunDataTable({
-  assistantResp,
   threads,
+  assistantId,
+  threadToUse,
 }: {
-  assistantResp: any
   threads: any
+  assistantId: any
+  threadToUse?: any
 }) {
   const [user, setUser] = useState(null)
   const [recentRun, setRecentRun] = useState(null)
-
-  console.log("threads: ", threads)
-  console.log("assistantResp: ", assistantResp)
-
-  useEffect(() => {
-    async function load() {
-      const { data: user, error } = await supabase.auth.getUser()
-      if (error) {
-        console.error("GET USER ERROR: ", error)
-        toast.error("Error getting user")
-        return
-      }
-
-      setUser(user.user)
-    }
-    load()
-  }, [])
 
   useEffect(() => {
     async function load() {
       const data = await fetch("/api/ai/fetch-thread", {
         method: "POST",
         body: JSON.stringify({
-          thread_id: threads[threads.length - 1].thread_id,
+          thread_id:
+            threadToUse?.[0]?.thread_id ?? threads[threads.length - 1].thread_id,
         }),
       })
       const json = await data.json()
-      console.log("json: ", json)
 
       setRecentRun(json)
     }
     load()
-  }, [threads])
+  }, [threadToUse, threads])
 
-  const handleResumeRun = async () => {
-    if (!recentRun) {
-      toast.error("No recent run found")
-      return
-    }
-
-    const data = await fetch("/api/ai/resume-run", {
+  const handleRefresh = async () => {
+    const data = await fetch("/api/ai/fetch-thread", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify({
-        thread_id: recentRun.thread_id,
+        thread_id:
+          threadToUse?.[0]?.thread_id ?? threads[threads.length - 1].thread_id,
       }),
     })
     const json = await data.json()
-    console.log("json: ", json)
-    return json
+
+    console.log("handleRefresh: ", json)
+
+    setRecentRun(json)
   }
-
-  useEffect(() => {
-    // const interval = setInterval(async () => {
-    //   const threadId = threads[threads.length - 1].thread_id
-    //   const data = await fetch("/api/ai/fetch-thread", {
-    //     method: "POST",
-    //     body: JSON.stringify({
-    //       thread_id: threadId,
-    //     }),
-    //   })
-    //   const json = await data.json()
-    //   setRecentRun(json)
-    // }, 10000)
-    // return () => clearInterval(interval)
-  }, [threads])
-
-  const reformatMessage = useCallback(
-    (message: any) => {
-      if (!recentRun) {
-        return
-      }
-      let message_content = message.content[0].text
-      let annotations = message_content.annotations
-      let citations = new Set()
-      let file_citations = []
-
-      for (let index = 0; index < annotations.length; index++) {
-        let annotation = annotations[index]
-
-        if (annotation.type === "file_path") {
-          let cited_file = annotation.file_path.file_id
-          const regexForCitation =
-            /(\[Download )(.+)(\]\(sandbox:\/mnt\/data\/)(.+)(\))/g
-
-          message_content.value = message_content.value.replace(
-            regexForCitation,
-            ""
-          )
-
-          file_citations.push({
-            file_id: cited_file,
-            message_id: message.id,
-            thread_id: message.thread_id,
-          })
-        } else if (annotation.type === "file_citation") {
-          let cited_file = annotation.file_citation.file_id
-          const regexForCitation = /【(\d+)†source】/g
-
-          message_content.value = message_content.value.replace(
-            regexForCitation,
-            ""
-          )
-
-          citations.add(`${index + 1}. [${cited_file.slice(0, 8)}]`)
-
-          file_citations.push({
-            file_id: cited_file,
-            message_id: message.id,
-            thread_id: message.thread_id,
-            index: index,
-          })
-        }
-      }
-
-      return file_citations
-    },
-    [recentRun]
-  )
-
-  const handleViewFile = async (
-    threadId: string,
-    messageId: string,
-    fileId: string
-  ) => {
-    if (!threadId) {
-      return toast.error("No thread id found")
-    }
-
-    if (!messageId) {
-      return toast.error("No message id found")
-    }
-
-    if (!fileId) {
-      return toast.error("No file id found")
-    }
-    const data = await fetch("/api/ai/read-file", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        threadId,
-        messageId,
-        fileId,
-      }),
-    })
-
-    const json = await data.json()
-
-    if (json.error) {
-      toast.error(json.error.message)
-      return
-    }
-
-    return json
-  }
-
-  function Comp(tests: any) {
-    const [work, setWork] = useState({})
-
-    useEffect(() => {
-      async function load() {
-        for (const test of tests.tests) {
-          const res = reformatMessage(test)
-
-          if (res?.length === 0) {
-            return
-          }
-
-          if (!res?.[0].thread_id) {
-            return toast.error("No thread id found")
-          }
-
-          if (!res?.[0].message_id) {
-            return toast.error("No message id found")
-          }
-
-          if (!res?.[0].file_id) {
-            return toast.error("No file id found")
-          }
-
-          const fileda = await handleViewFile(
-            res?.[0].thread_id,
-            res?.[0].message_id,
-            res?.[0].file_id
-          )
-
-          if (fileda.resp2) {
-            setWork((prev) => fileda.resp2)
-          }
-        }
-      }
-      load()
-    }, [tests])
-
-    useEffect(() => {}, [work])
-
-    return <TestSuiteDataTable work={work} />
-  }
-
-  console.log("RECENT RUN: ", recentRun)
 
   return (
     <div className="col-span-3 grid grid-cols-3 gap-4 my-4">
-      <Card className="col-span-2 border-gray-800">
-        <CardHeader>
-          <CardTitle className="flex gap-2">Most Recent Run</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col w-full overflow-y-scroll ">
-          {threads && threads.length > 0 && (
-            <>
-              <div className="flex flex-col border-gray-800 border-b cursor-pointer">
-                <div className="flex w-full justify-between border-gray-800 border-b">
-                  <p className="text-sm font-bold">
-                    {threads[threads.length - 1].thread_id
-                      .split("_")[1]
-                      .slice(0, 8)}
-                  </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {format(
-                      parseISO(threads[threads.length - 1].created_at),
-                      "dd/MM/yyyy"
+      <Tabs defaultValue="test_plan" className="w-full col-span-2">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="test_plan">Plan</TabsTrigger>
+          <TabsTrigger value="test_gen">Generate</TabsTrigger>
+          <TabsTrigger value="test_exec">Execute</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="test_plan">
+          <Card className="col-span-2 border-gray-800">
+            <CardHeader className="">
+              <CardTitle className="flex justify-between border-b mb-1 border-gray-800 gap-2">
+                {threadToUse?.[0]?.thread_id.split("_")[1].slice(0, 8) ??
+                  threads[threads.length - 1].thread_id
+                    .split("_")[1]
+                    .slice(0, 8)}
+                <CardDescription className="flex flex-row gap-2">
+                  Planning Phase
+                </CardDescription>
+                <span className="text-xs bottom-0 mt-3 text-gray-500 dark:text-gray-400">
+                  {format(
+                    parseISO(
+                      threadToUse?.[0]?.created_at ??
+                        threads[threads.length - 1].created_at
+                    ),
+                    "dd/MM/yyyy"
+                  )}
+                </span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col w-full overflow-y-scroll ">
+              {threads && threads.length > 0 && (
+                <>
+                  <div className="flex flex-row justify-between ">
+                    {recentRun && (
+                      <div className="h-full w-full ">
+                        {recentRun && <TestPlanTable recentRun={recentRun} />}
+                      </div>
                     )}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex flex-row justify-between ">
-                {recentRun && (
-                  <div className="h-full w-full ">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      Results
-                    </p>
-                    {recentRun && <Comp tests={recentRun?.resp2?.data} />}
                   </div>
-                )}
-              </div>
-            </>
-          )}
-        </CardContent>
-      </Card>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="test_gen">
+          <Card className="col-span-2 w-full border-gray-800">
+            <CardHeader className="">
+              <CardTitle className="flex justify-between border-b mb-1 border-gray-800 gap-2">
+                {threadToUse?.[0]?.thread_id.split("_")[1].slice(0, 8) ??
+                  threads[threads.length - 1].thread_id
+                    .split("_")[1]
+                    .slice(0, 8)}
+                <CardDescription className="flex flex-row gap-2">
+                  Generation Phase
+                </CardDescription>
+                <span className="text-xs bottom-0 mt-3 text-gray-500 dark:text-gray-400">
+                  {format(
+                    parseISO(
+                      threadToUse?.[0]?.created_at ??
+                        threads[threads.length - 1].created_at
+                    ),
+                    "dd/MM/yyyy"
+                  )}
+                </span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col w-full ">
+              {threads && threads.length > 0 && (
+                <>
+                  <div className="flex flex-row justify-between ">
+                    {recentRun && (
+                      <div className="h-full w-full ">
+                        <TestGenTable
+                          threads={threads}
+                          recentRun={recentRun}
+                          assistantId={assistantId}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="test_exec">
+          <Card className="col-span-2 border-gray-800">
+            <CardHeader className="">
+              <CardTitle className="flex justify-between border-b mb-1 border-gray-800 gap-2">
+                {threadToUse?.[0]?.thread_id.split("_")[1].slice(0, 8) ??
+                  threads[threads.length - 1].thread_id
+                    .split("_")[1]
+                    .slice(0, 8)}
+                <CardDescription className="flex flex-row gap-2">
+                  Execution Phase
+                </CardDescription>
+                <span className="text-xs bottom-0 mt-3 text-gray-500 dark:text-gray-400">
+                  {format(
+                    parseISO(
+                      threadToUse?.[0]?.created_at ??
+                        threads[threads.length - 1].created_at
+                    ),
+                    "dd/MM/yyyy"
+                  )}
+                </span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col w-full overflow-y-scroll ">
+              {threads && threads.length > 0 && (
+                <>
+                  <div className="flex flex-row justify-between ">
+                    {recentRun && (
+                      <div className="h-full w-full ">Component to come</div>
+                    )}
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
 
-      <Card className="col-span-1 border-gray-800">
+      <Card className="col-span-1 border-gray-800 max-h-[655px]  overflow-y-scroll ">
         <CardHeader>
-          <CardTitle className="flex gap-2">Run Logs</CardTitle>
+          <CardTitle className="flex justify-between gap-2 align-middle cursor-default  text-center border-b border-gray-800">
+            <div className="flex flex-row gap-2">
+            Run Logs
+            <Badge className="bg-green-900/25 h-min ">
+              {recentRun && recentRun.resp.data?.length ?? 0}
+              
+              /{recentRun && recentRun.resp.data?.length ?? 0}
+            </Badge>
+            </div>
+            
+            <Button
+              className="bg-green-900/75 mb-1 hover:bg-green-900 cursor-pointer"
+              size="sm"
+              onClick={() => handleRefresh()}
+            >
+              Refresh
+            </Button>
+          </CardTitle>
         </CardHeader>
-        <CardContent className="flex flex-col w-full overflow-y-scroll">
-          <div className="flex flex-col justify-between my-2 pb-1">
+        <CardContent className="flex flex-col w-full">
+          <div className="flex flex-col justify-between">
             {recentRun && (
-              <div className="">
-                <p className="text-sm text-gray-500 dark:text-gray-400">Logs</p>
+              <div >
                 {recentRun.resp2.data.length > 0 &&
                   recentRun.resp2.data.map((test: any, i) => {
-                    const res = reformatMessage(test)
+                    const res = reformatMessage({
+                      message: test,
+                      recentRun: recentRun,
+                    })
 
                     return (
                       <div
@@ -302,11 +247,11 @@ function RunDataTable({
                                     className="bg-green-900/75 hover:bg-green-900 "
                                     size="sm"
                                     onClick={() =>
-                                      handleViewFile(
-                                        citation.thread_id,
-                                        citation.message_id,
-                                        citation.file_id
-                                      )
+                                      handleViewFile({
+                                        fileId: citation.file_id,
+                                        messageId: citation.message_id,
+                                        threadId: citation.thread_id,
+                                      })
                                     }
                                   >
                                     View

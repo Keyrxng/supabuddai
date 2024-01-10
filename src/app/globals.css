@@ -47,8 +47,6 @@
   }
 }
 
-
-
 body {
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
@@ -111,6 +109,12 @@ body {
   background: #202631;
 
 }
+
+/* style the wait cursor */
+::-webkit-scrollbar-waiting {
+  background: #e48913;
+}
+
 ::-webkit-scrollbar-track {
   border-radius: 0.5rem;
   background: #202631;

@@ -14,6 +14,7 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table"
+import { toast } from "sonner"
 
 import {
   Table,
@@ -73,16 +74,20 @@ export const columns: ColumnDef<TestProps>[] = [
     header: "Policy",
   },
   {
-    accessorKey: "check_test",
-    header: "Check Test",
+    accessorKey: "test",
+    header: "Test",
   },
   {
-    accessorKey: "condition_test",
-    header: "Condition Test",
+    accessorKey: "role",
+    header: "Role",
   },
   {
-    accessorKey: "description",
-    header: "Description",
+    accessorKey: "command",
+    header: "Command",
+  },
+  {
+    accessorKey: "condition",
+    header: "Condition",
   },
   {
     accessorKey: "expected_result",
@@ -95,7 +100,7 @@ const supabase = createClientComponentClient({
   supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
 })
 
-export function TestSuiteDataTable({ work }: { work: {} }) {
+export function TestPlanDataTable({ work }: { work: any[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [rls, setRls] = React.useState<TestProps[]>([])
   const [rowSelection, setRowSelection] = React.useState({})
@@ -105,44 +110,59 @@ export function TestSuiteDataTable({ work }: { work: {} }) {
     []
   )
 
-  React.useEffect(() => {
-    const data = toWork(work)
+  interface Work {
+    index: number
+    schema: string
+    table: string
+    policy: string
+    tests: [
+      {
+        description: string
+        role: string
+        command: string
+        condition: string
+        expected_result: string
+      },
+    ]
+  }
 
-    setRls(data)
-  }, [work])
-
-  const toWork = (work: Work) => {
+  const toWork = async (dataa: any[]) => {
     const result = []
-    for (const schema in work) {
-      for (const table in work[schema]) {
-        for (const policy in work[schema][table]) {
-          for (const check_test in work[schema][table][policy].check_tests) {
-            const check = work[schema][table][policy].check_tests[check_test]
-            result.push({
-              schema_name: schema,
-              table_name: table,
-              policy_name: policy,
-              check_test: check.description,
-              expected_result: check.expected_result,
-            })
-          }
-          for (const condition_test in work[schema][table][policy]
-            .condition_tests) {
-            const condition =
-              work[schema][table][policy].condition_tests[condition_test]
-            result.push({
-              schema_name: schema,
-              table_name: table,
-              policy_name: policy,
-              condition_test: condition.description,
-              expected_result: condition.expected_result,
-            })
-          }
+
+    console.log("dataa : ", dataa)
+
+    if (!dataa) return result
+
+    dataa.map((w) => {
+      w.tests.map((t) => {
+        const entry = {
+          index: w.index,
+          schema_name: w.schema,
+          table_name: w.table,
+          policy_name: w.policy,
+          test: t.description,
+          role: t.role,
+          command: t.command,
+          condition: t.condition,
+          expected_result: t.expected_result,
         }
-      }
-    }
+        result.push(entry)
+      })
+    })
+
     return result
   }
+
+  React.useEffect(() => {
+    async function load() {
+      const data = await toWork(work)
+      console.log("load data : ", data)
+      setRls((prev) => data)
+    }
+    load()
+
+    console.log("rls : ", rls)
+  }, [work])
 
   const table = useReactTable({
     data: rls,
@@ -230,30 +250,3 @@ export function TestSuiteDataTable({ work }: { work: {} }) {
     </div>
   )
 }
-
-/**
- * // const rlsFetching = async () => {
-  //   const resp = await fetch("/api/rls", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //     body: JSON.stringify({
-  //       name: project,
-  //     }),
-  //   });
-
-  //   const data = await resp.json();
-
-  //   setRls(data);
-  //   const { data: user } = await supabase.auth.getUser();
-  //   const file = jsonToCSV(data, project, user.user.id);
-
-  //   const element = document.createElement("a");
-  //   const fileBlob = new Blob([file], { type: "text/plain" });
-  //   element.href = URL.createObjectURL(fileBlob);
-  //   element.download = "rls.csv";
-  //   document.body.appendChild(element);
-  //   element.click();
-  // };
- */

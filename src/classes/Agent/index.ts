@@ -19,7 +19,33 @@ const gptFunctions: OpenAI.Chat.Completions.ChatCompletionCreateParams.Function[
   []
 
 const starterPrompt = `
-You are SupaBuddAi, a Supabase RLS security expert, you are equipped to handle tasks involving the review and penetration test planning of RLS policies using database schemas in TypeScript. You will analyse the complete TypeScript type schema and all RLS policies, including schema name, table name, policy name, condition, check, command, and role. You will generate JSON structures detailing the necessary tests for each policy. These JSONs will contain schema, table, policy, and test context, describing how each policy should be tested against considering the parameters of the RLS policy in-scope.
+You are SupaBuddAi, a Supabase RLS security expert, you are equipped to handle tasks involving the review and penetration test planning of RLS policies using database schema types.
+Using the files provided, you will analyse the complete schema txt file and rls CSV file and use these as input and reference data.
+You will generate the complete set of JSON structures detailing the necessary tests for each policy.
+These JSONs will abide by the JSON format below without fail, describing how each policy should be tested against considering the parameters of the RLS policy in-scope.
+
+{
+  "index": number,
+  "schema": string,
+  "table": string, 
+  "policy": string,
+  "tests": [
+      {
+          "description": string,
+          "role": string,
+          "command": string,
+          "condition": string,
+          "expected_result": string
+      }
+  ]
+}
+
+- Some of the policies may be complex, and may require multiple tests to be written.
+- In cases where the tests list is empty, use your best judgement and infer what you can from the what data is available and determine what tests should be written.
+- Do not ask for user input, validation or confirmation. You are expected to generate the test plans without any user input.
+
+
+Once you are finished any task, use the code intepreter to generate a downloadable file containing a JSON array of JSON objects.
 `
 
 class Agent {
@@ -227,15 +253,8 @@ class Agent {
   async runThread(fileIds: string[], assistantId: string, userId: string) {
     const res = await this.openAI.beta.threads.createAndRun({
       assistant_id: assistantId,
+      instructions: starterPrompt,
       thread: {
-        messages: [
-          {
-            role: "user",
-            content:
-              "Return a json structure describing the necessary tests for each table in the database. Use the typescript typed schema file and the RLS policies CSV file as input data. The JSONs should contain schema, table, policy, and test context, describing how each policy should be tested against considering the parameters of the RLS policies protecting the table in-scope.",
-            file_ids: fileIds,
-          },
-        ],
         metadata: {
           user_id: userId,
         },
@@ -251,6 +270,70 @@ class Agent {
 
   async getThreadMessages(threadId: string) {
     const res = await this.openAI.beta.threads.messages.list(threadId)
+    return res
+  }
+
+  async createMessage(threadId: string, content: string, fileIds?: string[]) {
+    const res = await this.openAI.beta.threads.messages.create(threadId, {
+      role: "user",
+      content: content,
+      file_ids: fileIds,
+    })
+
+    return res
+  }
+
+  async generateTests(threadId: string, assistantId: string) {
+    const content = `Using the test plans you just created, you are going to write the javascript code for each test according to your requirements.
+    Each test should be a simple single function call to the supabasejs client with the context of the command, role, and condition.
+    Assume that the client is already imported and configured, and that the tests will be executed in a nodejs environment.
+    You are writing the base test, and the test should return true if the test passes, and false if the test fails.
+    
+    JSON test format:
+
+    test: 'const testName = async (schema, table, command, role, condition) => {
+      switch (schema) {
+        case "public":
+          const {data, error} = await supabase.from(table).select().limit(1)
+          
+          if (error) {
+            return false
+          }
+          return true
+        case "storage":
+          const {data, error} = await supabase.storage.from(table).list()
+          
+          if (error) {
+            return false
+          }
+          return true
+      }
+    }'
+
+    - Do not ask for user input, validation or confirmation. You are expected to generate the tests without any user input.
+    - Do not explain the tests, just write the tests and add comments to the code if necessary.
+    - Do not write any code outside of the function.
+
+    - Once you are finished, use the code intepreter to generate a downloadable file containing a JSON array of JSON objects with the following format:
+      {
+        "index": number,
+        "schema": string,
+        "table": string, 
+        "policy": string,
+        "test": string
+      }
+    `
+
+    const run = await this.openAI.beta.threads.runs.create(threadId, {
+      assistant_id: assistantId,
+      additional_instructions: content,
+    })
+
+    return run
+  }
+
+  async cancelRun(threadId: string, runId: string) {
+    const res = await this.openAI.beta.threads.runs.cancel(threadId, runId)
     return res
   }
 
