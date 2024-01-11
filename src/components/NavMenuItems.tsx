@@ -1,9 +1,7 @@
 "use client"
 
 import * as React from "react"
-import Image from "next/image"
 import Link from "next/link"
-import { LucideOctagon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import {
@@ -16,43 +14,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 
-const components: { title: string; href: string; description: string }[] = [
-  {
-    title: "Alert Dialog",
-    href: "/docs/primitives/alert-dialog",
-    description:
-      "A modal dialog that interrupts the user with important content and expects a response.",
-  },
-  {
-    title: "Hover Card",
-    href: "/docs/primitives/hover-card",
-    description:
-      "For sighted users to preview content available behind a link.",
-  },
-  {
-    title: "Progress",
-    href: "/docs/primitives/progress",
-    description:
-      "Displays an indicator showing the completion progress of a task, typically displayed as a progress bar.",
-  },
-  {
-    title: "Scroll-area",
-    href: "/docs/primitives/scroll-area",
-    description: "Visually or semantically separates content.",
-  },
-  {
-    title: "Tabs",
-    href: "/docs/primitives/tabs",
-    description:
-      "A set of layered sections of content—known as tab panels—that are displayed one at a time.",
-  },
-  {
-    title: "Tooltip",
-    href: "/docs/primitives/tooltip",
-    description:
-      "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
-  },
-]
+import NavLogo from "./NavLogo"
 
 export function NavigationMenuDemo() {
   return (
@@ -60,36 +22,35 @@ export function NavigationMenuDemo() {
       <NavigationMenuList>
         <NavigationMenuItem>
           <NavigationMenuTrigger>Why SupaBuddAi?</NavigationMenuTrigger>
-          <NavigationMenuContent className="bg-[#313131]">
-            <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-              <li className="row-span-3">
-                <NavigationMenuLink asChild>
-                  <a
-                    className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none focus:shadow-md"
-                    href="/"
-                  >
-                    <Image
-                      src="/supabuddai-logo.png"
-                      width={450}
-                      height={450}
-                      className="w-full h-full"
-                      alt="SupaBuddAi Logo"
-                    />
-                    <Image
-                      src="/SupaBuddAi.svg"
-                      width={450}
-                      height={450}
-                      className="w-full h-auto"
-                      alt="SupaBuddAi Logo Text"
-                    />
-                    <p className="text-sm leading-tight text-muted-foreground">
-                      Elevate Your Project's Security with AI-Powered Precision.
-                    </p>
-                  </a>
-                </NavigationMenuLink>
-              </li>
+          <NavigationMenuContent className="bg-[#313131] mx-auto">
+            <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] grid-cols-2 text-white font-bold">
               <ListItem
-                className="hover:bg-[#353535]"
+                className="hover:bg-[#353535]  line-clamp-2 text-sm leading-snug backdrop-none saturate-200"
+                href="/benefits"
+                title="Advanced Security"
+              >
+                <p className="">
+                  Uncover the power of AI in fortifying your database security
+                  with custom policies.
+                </p>
+              </ListItem>
+              <ListItem
+                className="hover:bg-[#353535]  backdrop-blur-md"
+                href="/how-it-works"
+                title="Effortless Integration"
+              >
+                Learn how SupaBuddAi seamlessly integrates with your database.
+              </ListItem>
+              <ListItem
+                className="hover:bg-[#353535]  backdrop-blur-md"
+                href="/features"
+                title="Intuitive Dashboard"
+              >
+                Explore our user-friendly dashboard for real-time security
+                insights.
+              </ListItem>
+              <ListItem
+                className="hover:bg-[#353535]  backdrop-blur-md"
                 href="/benefits"
                 title="Advanced Security"
               >
@@ -97,27 +58,33 @@ export function NavigationMenuDemo() {
                 with custom policies.
               </ListItem>
               <ListItem
-                className="hover:bg-[#353535]"
+                className="hover:bg-[#353535]  backdrop-blur-md"
                 href="/how-it-works"
                 title="Effortless Integration"
               >
                 Learn how SupaBuddAi seamlessly integrates with your database.
               </ListItem>
               <ListItem
-                className="hover:bg-[#353535]"
+                className="hover:bg-[#353535]  backdrop-blur-md"
                 href="/features"
                 title="Intuitive Dashboard"
               >
                 Explore our user-friendly dashboard for real-time security
                 insights.
               </ListItem>
+              <div className="flex items-center inset-0 absolute -z-2 justify-center bg-blend-overlay">
+                <NavLogo
+                  imgSize=""
+                  className="h-min relative mx-auto grid -z-8 opacity-25 justify-center items-center"
+                />
+              </div>
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
           <NavigationMenuTrigger>Getting Started</NavigationMenuTrigger>
           <NavigationMenuContent className="bg-[#313131]">
-            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+            <ul className=" grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
               <ListItem
                 className="hover:bg-[#353535]"
                 href="/quick-start"
@@ -151,7 +118,7 @@ export function NavigationMenuDemo() {
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>
-        <NavigationMenuItem>
+        <NavigationMenuItem className="hidden sm:inline-block">
           <Link href="/docs" legacyBehavior passHref>
             <NavigationMenuLink className={navigationMenuTriggerStyle()}>
               Documentation

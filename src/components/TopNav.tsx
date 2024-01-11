@@ -4,7 +4,6 @@ import React from "react"
 import Image from "next/image"
 
 import { ConnectedBlinker } from "./ConnectedBlinker"
-import { ThemeToggle } from "./theme-toggle"
 import { Button } from "./ui/button"
 
 function TopNav() {
@@ -18,18 +17,23 @@ function TopNav() {
               alt="Logo"
               width={600}
               height={600}
-              className="w-full h-full object-cover"
+              className="hidden lg:inline-block w-full h-full object-contain"
+            />
+            <Image
+              src="/supabuddai-logo.png"
+              alt="Logo"
+              width={600}
+              height={600}
+              className="lg:hidden p-0.5 w-full h-full object-contain"
             />
           </a>
         </div>
       </div>
       <div className="col-span-12">
         <div className="flex justify-between items-center">
-          <div className="flex items-center">
-            <Button className="mr-4">Search</Button>
-            <Button className="mr-4">Notifications</Button>
+          <div className="flex items-center mx-4">
+            <Button className="">Notifications</Button>
             <ConnectedBlinker />
-            <ThemeToggle />
           </div>
         </div>
       </div>

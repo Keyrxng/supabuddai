@@ -1,6 +1,6 @@
 "use client"
 
-import React, { Suspense, useEffect, useState } from "react"
+import React, { Suspense, useEffect, useRef, useState } from "react"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { format, parseISO } from "date-fns"
 import { MoveRight } from "lucide-react"
@@ -22,9 +22,7 @@ const supabase = createClientComponentClient({
 })
 export default function Page({}: Props) {
   const [projects, setProjects] = useState([])
-  const [user, setUser] = useState(null)
-  const [hover, setHover] = useState(false)
-  createClientComponentClient
+
   useEffect(() => {
     async function load() {
       const { data: user, error } = await supabase.auth.getUser()
@@ -33,7 +31,6 @@ export default function Page({}: Props) {
         return
       }
 
-      setUser(user.user)
       loadProjects(user.user)
     }
     async function loadProjects(user) {
@@ -47,13 +44,14 @@ export default function Page({}: Props) {
         return
       }
 
-      console.log(userProjects)
       setProjects(userProjects)
     }
     load()
   }, [])
 
   const CardComp = ({ project }: { project: any }) => {
+    const [hover, setHover] = useState(false)
+
     return (
       <Card
         onMouseEnter={() => setHover(true)}
@@ -63,9 +61,7 @@ export default function Page({}: Props) {
             `/projects/${project?.db_name.replace(/\s/g, "-")}`
           )
         }
-        className={`${
-          hover ? " bg-gray-800/25" : " bg-accent-foreground"
-        }  grid gap-4 text-left col-span-2 w-96 cursor-pointer`}
+        className={`grid gap-4 text-left col-span-2 border-gray-700 my-2 w-96 cursor-pointer max-w-xs md:max-w-sm bg-[#1a1a1a] hover:bg-[#313131] shadow-[#1a1a1a]`}
       >
         <CardHeader>
           <div className="flex flex-row justify-between">
@@ -78,39 +74,44 @@ export default function Page({}: Props) {
               }`}
             />
           </div>
-          <CardDescription className="text-xs font-light grid grid-cols-2 justify-between gap-1 text-muted">
-            <Badge className="bg-gray-500/50 text-white font-light text-xs text-muted">
-              {project?.db_ref}
-            </Badge>
-            <div className="text-right w-full flex justify-end">
-              <Badge className="bg-gray-500/50 text-white text-xs font-light right-0 flex justify-end text-muted">
-                {project?.updated_at
-                  ? format(parseISO(project?.updated_at), "PP")
-                  : "N/A"}
+          {project?.db_ref !== "N/A" && (
+            <CardDescription className="text-xs font-light grid grid-cols-2 justify-between gap-1 text-muted">
+              <Badge className="bg-gray-500/50 mx-auto text-white font-light text-xs text-muted">
+                {project?.db_ref}
               </Badge>
-            </div>
-          </CardDescription>
+              <div className="text-right w-full flex justify-end">
+                <Badge className="bg-gray-500/50 mx-auto text-white text-xs font-light right-0 flex justify-end text-muted">
+                  {project?.updated_at
+                    ? format(parseISO(project?.updated_at), "PP")
+                    : "N/A"}
+                </Badge>
+              </div>
+            </CardDescription>
+          )}
         </CardHeader>
-
-        <CardContent className="container flex flex-row">
-          <ul className="flex flex-row gap-4">
-            <li className="text-sm text-muted">
-              <Badge className="bg-green-500 text-white">Working</Badge>
-            </li>
-            <li className="text-sm text-muted">
-              <Badge className="bg-green-500 text-white">Working</Badge>
-            </li>
-            <li className="text-sm text-muted">
-              <Badge className="bg-green-500 text-white">Working</Badge>
-            </li>
-          </ul>
-        </CardContent>
+        {project?.db_ref !== "N/A" && (
+          <CardContent className="container flex flex-row text-center justify-center">
+            <ul className="flex flex-row gap-4">
+              <li className="text-sm text-muted">
+                <Badge className="bg-green-500 text-white">Planning</Badge>
+              </li>
+              <li className="text-sm text-muted">
+                <Badge className="bg-green-500 text-white">Generation</Badge>
+              </li>
+              <li className="text-sm text-muted">
+                <Badge className="bg-red-500/45  text-gray-500/50">
+                  Execution
+                </Badge>
+              </li>
+            </ul>
+          </CardContent>
+        )}
       </Card>
     )
   }
 
   return (
-    <div className="m-2 mt-5 ">
+    <div className=" ">
       <Suspense
         fallback={
           <CardComp
@@ -124,8 +125,8 @@ export default function Page({}: Props) {
         <div className="grid-cols-1 ">
           {projects && projects.length > 0 && (
             <>
-              <ul className="[&>:children:not(:last-child)]:mb-4 [&>:nth-last-child(1)]:mb-24">
-                {projects.slice(0, 3).map((project) => (
+              <ul className="[&>:children:not(:last-child)]:mb-4 [&>:nth-last-child(1)]:mb-24 max-w-xs ">
+                {projects.slice(0, 2).map((project) => (
                   <li key={project?.db_name}>
                     <CardComp project={project} />
                   </li>

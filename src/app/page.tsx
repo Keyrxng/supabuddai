@@ -2,18 +2,32 @@
 
 import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
+import router from "next/router"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import {
   BadgeHelp,
+  CreditCard,
+  LifeBuoy,
+  LogOut,
   Menu,
   MoveRight,
+  Settings,
+  User,
   UserCircle,
   UserPlus,
   Workflow,
 } from "lucide-react"
+import { toast } from "sonner"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
 import {
   Drawer,
   DrawerClose,
@@ -29,8 +43,8 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
+import NavLogo from "@/components/NavLogo"
 import { NavigationMenuDemo } from "@/components/NavMenuItems"
-import { ThemeToggle } from "@/components/theme-toggle"
 
 const noUserNavItems = [
   {
@@ -90,35 +104,8 @@ export default function Page() {
     load()
   }, [])
 
-  const navItems = [
-    {
-      name: "Projects",
-      icon: Workflow,
-      children: [
-        {
-          name: "All projects",
-          href: "/projects",
-        },
-      ],
-      href: "/projects",
-    },
-    {
-      name: "Help",
-      icon: BadgeHelp,
-      children: [
-        {
-          name: "Docs",
-          href: "/help/docs",
-        },
-        {
-          name: "Support",
-          href: "/help/support",
-        },
-      ],
-      href: "/help",
-    },
-  ]
   const [hover, setHover] = useState(false)
+  const [hidePill, setHidePill] = useState(false)
 
   const handleGlow = (event) => {
     if (!event.target) return
@@ -153,44 +140,148 @@ export default function Page() {
     }
   }, [])
 
+  const ListItems = [
+    {
+      name: "My Account",
+      icon: User,
+      children: [
+        {
+          name: "Profile",
+          icon: User,
+          href: "/account/profile",
+          action: () => {
+            router.push("/account/profile")
+          },
+        },
+        {
+          name: "Billing",
+          icon: CreditCard,
+          href: "/account/billing",
+          action: () => {
+            router.push("/account/billing")
+          },
+        },
+        {
+          name: "View all projects",
+          href: "/projects",
+          action: () => {
+            router.push("/projects")
+          },
+        },
+        {
+          name: "Create new project",
+          href: "/projects/create-new-project",
+          action: () => {
+            router.push("/projects/create-new-project")
+          },
+        },
+      ],
+    },
+
+    {
+      name: "Help",
+      icon: BadgeHelp,
+      children: [
+        {
+          name: "Support",
+          icon: LifeBuoy,
+          href: "/support",
+          action: () => {
+            router.push("/support")
+          },
+        },
+        {
+          name: "Settings",
+          icon: Settings,
+          href: "/account/settings",
+          action: () => {
+            router.push("/account/settings")
+          },
+        },
+        {
+          name: "Log out",
+          icon: LogOut,
+          action: () => {
+            toast.promise(supabase.auth.signOut(), {
+              loading: "The page will reload once you are logged out.",
+              success: (df) => {
+                window.location.href = window.location.href
+                return "You have been logged out."
+              },
+              error: (err) => {
+                return `An error occurred: ${err.toString()}`
+              },
+            })
+          },
+        },
+      ],
+    },
+  ]
+
   return (
     <>
-      <div className="w-full border-b border-gray-800 h-16 flex justify-between align-middle text-center">
-        <div className="container col-span-12 flex items-center sticky w-full inset-0 top-0 justify-between border-gray-800 ">
-          <div className="border-gray-800 h-16 lg:w-full align-middle ">
-            <div className="w-full flex ">
-              <a href="/">
+      <div className="w-full border-b border-gray-800 h-16 flex justify-center justify-items-center align-middle text-center">
+        <div className="col-span-12 flex items-center sticky w-full text-center align-middle  inset-0 top-0 justify-between border-gray-800 ">
+          <div className=" h-16 w-full align-middle self-center items-center">
+            <div className="w-full flex">
+              <a href="/" className="left-0">
                 <Image
                   src="/supabuddai.svg"
                   alt="Logo"
                   width={600}
                   height={600}
-                  className={`w-52 pt-2 sm:w-76 sm:pt-2  h-full object-cover`}
+                  className={`hidden sm:inline-block w-52 pt-2 sm:w-76 sm:pt-2 h-full object-cover`}
+                />
+                <Image
+                  src="/supabuddai-logo.png"
+                  alt="Logo"
+                  width={160}
+                  height={160}
+                  className={`pt-1 left-0 h-14 sm:hidden object-contain min-w-fit`}
                 />
               </a>
-              <NavigationMenuDemo />
+              <div
+                onMouseEnter={() => setHidePill(true)}
+                onMouseLeave={() => setHidePill(false)}
+              >
+                <NavigationMenuDemo />
+              </div>
             </div>
           </div>
           <div className="col-span-12 w-max">
             <div className="flex justify-between pt-2 items-center">
-              <ThemeToggle />
               <div className="flex gap-2 items-center">
-                <div className="sm:hidden">
+                <div className="sm:hidden mr-2.5">
                   <Drawer>
                     <DrawerTrigger>
                       <Menu />
                     </DrawerTrigger>
                     <DrawerContent className="w-screen px-4 space-x-2">
                       <DrawerHeader>
-                        <DrawerTitle></DrawerTitle>
-                        <DrawerDescription>
-                          This action cannot be undone.
+                        <DrawerTitle className="grid grid-cols-1">
+                          <Image
+                            src="/SupaBuddAi.svg"
+                            alt="Logo"
+                            width={600}
+                            height={600}
+                            className="w-full h-full object-contain"
+                          />
+                        </DrawerTitle>
+                        <DrawerDescription className="relative">
+                          {/* <LoadingLogo className="opacity-5 -z-10 absolute justify-center align-middle object-contain" /> */}
+                          <Image
+                            src="/supabuddai-logo.png"
+                            alt="Logo"
+                            width={600}
+                            height={600}
+                            className="opacity-5 absolute justify-center align-middle object-contain"
+                          />
                         </DrawerDescription>
                       </DrawerHeader>
 
                       {user ? (
                         <>
-                          {navItems.map((item) => (
+                          {ListItems.map((item) => (
                             <div
                               key={item.name}
                               className="flex flex-col border-b border-gray-800 py-4"
@@ -245,9 +336,8 @@ export default function Page() {
                       )}
 
                       <DrawerFooter>
-                        <Button>Submit</Button>
                         <DrawerClose>
-                          <Button variant="outline">Cancel</Button>
+                          <Button variant="outline">Close</Button>
                         </DrawerClose>
                       </DrawerFooter>
                     </DrawerContent>
@@ -260,31 +350,37 @@ export default function Page() {
       </div>
       <div className="container mx-auto">
         <div className="grid grid-flow-row text-center min-h-screen m-4">
-          <article className="col-span-1 m-12 font-light text-center align-middle justify-center object-center items-center">
-            <div className="w-fit mx-auto h-min px-2">
-              <div
-                onMouseEnter={() => setHover(true)}
-                onMouseLeave={() => setHover(false)}
-                accessKey="glowElement"
-                className="cursor-pointer grid rounded-full h-min shadow-md shadow-[#1a1a1a] grid-flow-col-dense gap-2 text-center font-bold my-8 p-1.0 bg-[#313131]"
-              >
-                <div className="flex items-center  m-[4px] justify-center gap-2 ">
-                  <div className="flex p-1  rounded-full border h-fit justify-between text-center text-xs font-medium text-[#3ecf95] border-[#3ecf95]">
-                    Coming Soon!
-                  </div>
-                  <div className="flex  align-middle mr-3 h-min items-center gap-2 text-xs font-medium">
-                    Take a look at the MVP{" "}
-                    <MoveRight
-                      className={`${
-                        hover ? "animate-nudge-right" : ""
-                      } h-4 w-4 `}
-                    />
+          <article className="col-span-1 font-light text-center align-middle justify-center object-center items-center">
+            <div
+              className={`${
+                hidePill ? "" : "relative z-10"
+              } w-fit mx-auto h-min px-2  `}
+            >
+              <a href="/projects">
+                <div
+                  onMouseEnter={() => setHover(true)}
+                  onMouseLeave={() => setHover(false)}
+                  accessKey="glowElement"
+                  className="cursor-pointer grid rounded-full h-min shadow-md shadow-[#1a1a1a] grid-flow-col-dense gap-2 text-center font-bold my-8 p-1.0 bg-[#313131]"
+                >
+                  <div className="flex items-center  m-[4px] justify-center gap-2 ">
+                    <div className="flex p-1  rounded-full border h-fit justify-between text-center text-xs font-medium text-[#3ecf95] border-[#3ecf95]">
+                      Coming Soon!
+                    </div>
+                    <div className="flex  align-middle mr-3 h-min items-center gap-2 text-xs font-medium">
+                      Take a look at the MVP{" "}
+                      <MoveRight
+                        className={`${
+                          hover ? "animate-nudge-right" : ""
+                        } h-4 w-4 `}
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
+              </a>
             </div>
 
-            <h1 className="text-7xl text-center from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
+            <h1 className="text-5xl sm:text-7xl text-center from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
               SupaBuddAi<span className="text-[#3ecf95]">.</span>
             </h1>
 
@@ -314,7 +410,7 @@ export default function Page() {
               </h3>
             </div>
             <Button
-              className="mt-4 text-lg h-min w-min border-[0.1px] shadow-md drop-shadow-md shadow-[#1a1a1a] border-[#ffffff4b] bg-[#3ecf95]/65 hover:bg-[#3ecf95]/55"
+              className="mt-4 z-10 relative text-lg h-min w-min border-[0.1px] shadow-md drop-shadow-md shadow-[#1a1a1a] border-[#ffffff4b] bg-[#3ecf95]/65 hover:bg-[#3ecf95]/55"
               size="lg"
               accessKey="glowElement"
             >
@@ -322,142 +418,33 @@ export default function Page() {
             </Button>
           </article>
 
-          <div className="transition duration-500 hover:scale-105 my-8 mx-auto max-w-5xl p-6 bg-gradient-to-b from-[#1a1a1a] to-[#313131] rounded-xl shadow-xl">
-            <h2 className="text-4xl font-bold text-[#3ecf95] text-center">
-              Revolutionize Your Workflow
-            </h2>
-            <p className="text-gray-300 mt-4 text-center">
-              Experience the transformative impact of SupaBuddAi on your
-              projects.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-              <div
-                accessKey="glowElement"
-                className="flex flex-col items-center justify-center p-4 border border-gray-700 rounded-lg"
-              >
-                <h3 className="text-2xl font-semibold text-white">
-                  Maximize Time Efficiency
-                </h3>
-                <p className="text-gray-300 text-center mt-2">
-                  Streamline your security policy testing and schema management
-                  with our AI-driven automation, unlocking unprecedented time
-                  savings.
-                </p>
-                <span className="mt-2 text-3xl font-bold text-[#3ecf95]">
-                  Up to 75% Faster
-                </span>
-              </div>
-              <div
-                accessKey="glowElement"
-                className="flex flex-col items-center justify-center p-4 border border-gray-700 rounded-lg"
-              >
-                <h3 className="text-2xl font-semibold text-white">
-                  Dramatic Cost Reduction
-                </h3>
-                <p className="text-gray-300 text-center mt-2">
-                  Dramatically reduce your operational expenses with AI
-                  efficiency, making extensive security management a thing of
-                  the past.
-                </p>
-                <span className="mt-2 text-3xl font-bold text-[#3ecf95]">
-                  Up to 50% Cheaper
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="transition duration-500 hover:scale-105 my-8 mx-auto max-w-6xl p-6 bg-gradient-to-bl from-[#1a1a1a] to-[#313131] rounded-xl shadow-xl">
-            <h2 className="text-4xl font-bold text-[#3ecf95] text-center">
-              Key Features for the Modern Innovator
-            </h2>
-            <div className="flex flex-wrap justify-center gap-6 mt-6">
-              <div
-                accessKey="glowElement"
-                className="flex flex-col items-center p-4 bg-[#313131] rounded-lg shadow-md"
-              >
-                <h3 className="text-2xl font-semibold text-[#3ecf95]">
-                  Intuitive AI Analysis
-                </h3>
-                <p className="text-gray-300 mt-2 text-center">
-                  Harness the power of AI to gain actionable insights and
-                  streamline your database security, all with minimal effort.
-                </p>
-              </div>
-              <div
-                accessKey="glowElement"
-                className="flex flex-col items-center p-4 bg-[#313131] rounded-lg shadow-md"
-              >
-                <h3 className="text-2xl font-semibold text-[#3ecf95]">
-                  Effortless Real-Time Monitoring
-                </h3>
-                <p className="text-gray-300 mt-2 text-center">
-                  Enjoy peace of mind with our easy-to-use, real-time monitoring
-                  system that keeps your data secure around the clock.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="transition duration-500 hover:scale-105 my-8 mx-auto max-w-6xl p-6 bg-gradient-to-bl from-[#313131] to-[#1a1a1a] rounded-xl shadow-xl">
-            <h2 className="text-4xl font-bold text-[#3ecf95] text-center">
-              Your Next Game-Changer in Data Security
-            </h2>
-            <p className="text-gray-300 mt-4 text-center">
-              See how SupaBuddAi empowers indie hackers and solopreneurs with
-              AI-driven database security, tailor-made for the fast-paced,
-              innovative world of startups.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-              <div
-                accessKey="glowElement"
-                className="flex flex-col items-center justify-center p-4 border border-gray-700 rounded-lg"
-              >
-                <h3 className="text-2xl font-semibold text-white">
-                  Agile Security for Agile Teams
-                </h3>
-                <p className="text-gray-300 mt-2">
-                  Built for the dynamic needs of startups, SupaBuddAi offers
-                  rapid, AI-enhanced security solutions that evolve with your
-                  business.
-                </p>
-              </div>
-              <div
-                accessKey="glowElement"
-                className="flex flex-col items-center justify-center p-4 border border-gray-700 rounded-lg"
-              >
-                <h3 className="text-2xl font-semibold text-white">
-                  Streamlined Innovation
-                </h3>
-                <p className="text-gray-300 mt-2">
-                  SupaBuddAi empowers you to focus on what matters most:
-                  building your product. Let us handle the security.
-                </p>
-              </div>
-            </div>
-          </div>
+          <NavLogo
+            imgSize=""
+            className="h-min inset-0 mt-[5rem] absolute mx-auto grid opacity-20 justify-center items-center"
+          />
 
           <div
             onMouseMove={handleGlow}
-            className="my-8 mx-auto max-w-4xl p-4 bg-[#1a1a1a] rounded-lg shadow-lg transition duration-500 hover:scale-105"
+            className="my-8 mx-auto max-w-4xl p-4 cursor-default bg-[#1a1a1a] rounded-lg shadow-lg transition duration-500 hover:scale-105"
             accessKey="glowElement"
           >
             <h2 className="text-3xl font-semibold text-[#3ecf95]">
               Ship Faster with Confidence
             </h2>
             <p className="text-gray-300 mt-2">
-              Knowing that your data is secured the way you need it to be, you
-              can focus on what matters most.
+              Knowing that your data is secured the way you need it to be, so
+              you can focus on what matters most.
             </p>
             <div className="mt-4 flex justify-center">
               <Badge className="animate-pulse hover:text-white cursor-default hover:bg-[#3ecf95]/50 bg-[#3ecf95] text-black">
-                Speed Boost
+                Speed & Security
               </Badge>
             </div>
           </div>
 
           <div
             accessKey="glowElement"
-            className="my-8 mx-auto max-w-4xl p-4 bg-[#313131] rounded-lg shadow-lg transition duration-500 hover:scale-105"
+            className="my-8 mx-auto max-w-4xl p-4 cursor-default bg-[#313131] rounded-lg shadow-lg transition duration-500 hover:scale-105"
           >
             <h2 className="text-3xl font-semibold text-[#3ecf95]">
               AI-Driven Security
@@ -468,14 +455,14 @@ export default function Page() {
             </p>
             <div className="mt-4 flex justify-center">
               <Badge className="animate-pulse hover:text-white cursor-default hover:bg-[#3ecf95]/50 bg-[#3ecf95] text-black">
-                Custom AI Models
+                AI Security
               </Badge>
             </div>
           </div>
 
           <div
             accessKey="glowElement"
-            className="my-8 mx-auto max-w-4xl p-4 bg-[#1a1a1a] rounded-lg shadow-lg transition duration-500 hover:scale-105"
+            className="my-8 mx-auto max-w-4xl p-4 cursor-default bg-[#1a1a1a] rounded-lg shadow-lg transition duration-500 hover:scale-105"
           >
             <h2 className="text-3xl font-semibold text-[#3ecf95]">
               AI Trained on Your Data
@@ -487,7 +474,7 @@ export default function Page() {
             </p>
             <div className="mt-4 flex justify-center">
               <Badge className="animate-pulse hover:text-white cursor-default hover:bg-[#3ecf95]/50 bg-[#3ecf95] text-black">
-                AI Enhanced
+                Custom AI
               </Badge>
             </div>
           </div>
@@ -496,19 +483,19 @@ export default function Page() {
             accessKey="glowElement"
             className="my-8 mx-auto max-w-4xl p-4 bg-[#313131] rounded-lg shadow-lg transition duration-500 hover:scale-105"
           >
-            <h2 className="text-3xl font-semibold text-[#3ecf95]">
+            <h2 className="text-3xl cursor-default font-semibold text-[#3ecf95]">
               Intuitive Dashboard
             </h2>
-            <p className="text-gray-300 mt-2">
+            <p className="text-gray-300 cursor-default mt-2">
               Navigate through our user-friendly dashboard for real-time
               security insights and control at your fingertips.
             </p>
-            <div className="flex justify-center mt-4">
+            <div className="grid md:flex p-6 md:p-0 justify-center mt-4">
               <ResizablePanelGroup
                 direction="horizontal"
-                className="w-full h-full rounded-lg shadow-lg transition duration-500 hover:scale-105"
+                className="w-full h-full hidden md:block rounded-lg shadow-lg transition duration-500 hover:scale-105"
               >
-                <ResizablePanel defaultSize={100}>
+                <ResizablePanel defaultSize={100} className="hidden md:block">
                   <div className="flex h-[500px] items-center justify-center p-6">
                     <span className="font-semibold">
                       <Image
@@ -521,10 +508,10 @@ export default function Page() {
                     </span>
                   </div>
                 </ResizablePanel>
-                <ResizableHandle withHandle />
-                <ResizablePanel defaultSize={20}>
+                <ResizableHandle withHandle className="hidden md:flex" />
+                <ResizablePanel defaultSize={75} className="hidden md:block">
                   <ResizablePanelGroup direction="vertical">
-                    <ResizablePanel defaultSize={10}>
+                    <ResizablePanel defaultSize={75}>
                       <div className="flex h-full items-center justify-center p-4">
                         <span className="font-semibold">
                           <Image
@@ -537,8 +524,8 @@ export default function Page() {
                         </span>
                       </div>
                     </ResizablePanel>
-                    <ResizableHandle withHandle />
-                    <ResizablePanel defaultSize={10}>
+                    <ResizableHandle withHandle className="hidden md:flex" />
+                    <ResizablePanel defaultSize={25}>
                       <div className="flex h-full items-center justify-center p-6">
                         <span className="font-semibold">
                           <Image
@@ -555,32 +542,44 @@ export default function Page() {
                 </ResizablePanel>
               </ResizablePanelGroup>
 
-              {/* <ResizablePanelGroup direction="horizontal">
-                <ResizablePanel>
-                  <Image
-                    src="/dashboard-preview.jpg"
-                    alt="Dashboard Preview"
-                    width={600}
-                    height={400}
-                    className="rounded-lg"
-                  />
-                </ResizablePanel>
-                <ResizableHandle withHandle />
-                <ResizablePanel>
-                  <Image
-                    src="/dashboard-preview.jpg"
-                    alt="Dashboard Preview"
-                    width={600}
-                    height={400}
-                    className="rounded-lg"
-                  />
-                </ResizablePanel>
-              </ResizablePanelGroup> */}
+              <Carousel className="m-4 max-w-xs md:hidden">
+                <CarouselContent>
+                  <CarouselItem>
+                    <Image
+                      src="/dashboard-preview.jpg"
+                      alt="Dashboard Preview"
+                      width={600}
+                      height={400}
+                      className="rounded-lg"
+                    />
+                  </CarouselItem>
+                  <CarouselItem>
+                    <Image
+                      src="/dashboard-preview.jpg"
+                      alt="Dashboard Preview"
+                      width={600}
+                      height={400}
+                      className="rounded-lg"
+                    />
+                  </CarouselItem>
+                  <CarouselItem>
+                    <Image
+                      src="/dashboard-preview.jpg"
+                      alt="Dashboard Preview"
+                      width={600}
+                      height={400}
+                      className="rounded-lg"
+                    />
+                  </CarouselItem>
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+              </Carousel>
             </div>
           </div>
 
           <div
-            className="my-8 mx-auto max-w-4xl p-4 bg-[#1a1a1a] rounded-lg shadow-lg transition duration-500 hover:scale-105"
+            className="my-8 cursor-default mx-auto max-w-4xl p-4 bg-[#1a1a1a] rounded-lg shadow-lg transition duration-500 hover:scale-105"
             accessKey="glowElement"
           >
             <h2 className="text-3xl font-semibold text-[#3ecf95]">
@@ -592,15 +591,15 @@ export default function Page() {
               Gain a new perspective into your database while securing it at the
               same time.
             </p>
-            <div className="flex justify-center mt-4">
-              <Button className="hover:animate-pulse hover:text-black bg-[#3ecf95] hover:bg-[#3ecf95]/80">
-                Explore Features
-              </Button>
+            <div className="mt-4 flex justify-center">
+              <Badge className="animate-pulse hover:text-white cursor-default hover:bg-[#3ecf95]/50 bg-[#3ecf95] text-black">
+                Intuitive
+              </Badge>
             </div>
           </div>
 
           <div
-            className="my-8 mx-auto max-w-4xl p-4 bg-[#313131] rounded-lg shadow-lg transition duration-500 hover:scale-105"
+            className="my-8 cursor-default mx-auto max-w-4xl p-4 bg-[#313131] rounded-lg shadow-lg transition duration-500 hover:scale-105"
             accessKey="glowElement"
           >
             <h2 className="text-3xl font-semibold text-[#3ecf95]">
@@ -612,25 +611,25 @@ export default function Page() {
             </p>
             <div className="mt-4 flex justify-center">
               <Badge className="animate-pulse hover:text-white cursor-default hover:bg-[#3ecf95]/50 bg-[#3ecf95] text-black">
-                Performance Boost
+                Optimization
               </Badge>
             </div>
           </div>
 
           <div
             accessKey="glowElement"
-            className="my-8 mx-auto max-w-4xl p-4 bg-[#1a1a1a] rounded-lg shadow-lg transition duration-500 hover:scale-105"
+            className="my-8 mx-auto cursor-default max-w-4xl p-4 bg-[#1a1a1a] rounded-lg shadow-lg transition duration-500 hover:scale-105"
           >
             <h2 className="text-3xl font-semibold text-[#3ecf95]">
-              Data Visualization
+              Security Automation
             </h2>
             <p className="text-gray-300 mt-2">
-              Visualize your database in real-time with our AI-driven security
-              policies, custom-tailored to your needs.
+              Save time and money by automating your database security with
+              cutting edge, custom-tailored AI.
             </p>
             <div className="mt-4 flex justify-center">
               <Badge className="animate-pulse hover:text-white cursor-default hover:bg-[#3ecf95]/50 bg-[#3ecf95] text-black">
-                AI Enhanced
+                Automation
               </Badge>
             </div>
           </div>

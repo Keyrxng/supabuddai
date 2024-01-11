@@ -1,11 +1,38 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
+import Image from "next/image"
+import { useRouter } from "next/navigation"
+import router from "next/router"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import { BadgeHelp, Menu, UserCircle, UserPlus, Workflow } from "lucide-react"
+import { format, parseISO } from "date-fns"
+import {
+  BadgeHelp,
+  CreditCard,
+  Github,
+  LifeBuoy,
+  LogOut,
+  Menu,
+  MoveRight,
+  Settings,
+  User,
+  UserCircle,
+  UserPlus,
+  Workflow,
+} from "lucide-react"
+import { toast } from "sonner"
 
+import LoadingLogo from "./LoadingLogo"
 import TopNav from "./TopNav"
+import { Badge } from "./ui/badge"
 import { Button } from "./ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card"
 import {
   Drawer,
   DrawerClose,
@@ -62,6 +89,8 @@ const supabase = createClientComponentClient({
 
 function Nav({ children }: Props) {
   const [user, setUser] = useState(null)
+  const [projects, setProjects] = useState([])
+  const router = useRouter()
 
   useEffect(() => {
     async function load() {
@@ -72,39 +101,93 @@ function Nav({ children }: Props) {
         return
       }
 
-      setUser(data)
+      setUser(data.session?.user)
 
-      console.log("data: ", data)
+      const { data: userProjects, error: projectsError } = await supabase
+        .from("user_projects")
+        .select("*")
+        .eq("user_id", data.session?.user?.id)
+
+      setProjects(userProjects)
     }
     load()
   }, [])
 
-  const navItems = [
+  const ListItems = [
     {
-      name: "Projects",
-      icon: Workflow,
+      name: "My Account",
+      icon: User,
       children: [
         {
-          name: "All projects",
+          name: "Profile",
+          icon: User,
+          href: "/account/profile",
+          action: () => {
+            router.push("/account/profile")
+          },
+        },
+        {
+          name: "Billing",
+          icon: CreditCard,
+          href: "/account/billing",
+          action: () => {
+            router.push("/account/billing")
+          },
+        },
+        {
+          name: "View all projects",
           href: "/projects",
+          action: () => {
+            router.push("/projects")
+          },
+        },
+        {
+          name: "Create new project",
+          href: "/projects/create-new-project",
+          action: () => {
+            router.push("/projects/create-new-project")
+          },
         },
       ],
-      href: "/projects",
     },
+
     {
       name: "Help",
       icon: BadgeHelp,
       children: [
         {
-          name: "Docs",
-          href: "/help/docs",
+          name: "Support",
+          icon: LifeBuoy,
+          href: "/support",
+          action: () => {
+            router.push("/support")
+          },
         },
         {
-          name: "Support",
-          href: "/help/support",
+          name: "Settings",
+          icon: Settings,
+          href: "/account/settings",
+          action: () => {
+            router.push("/account/settings")
+          },
+        },
+        {
+          name: "Log out",
+          icon: LogOut,
+          action: () => {
+            toast.promise(supabase.auth.signOut(), {
+              loading: "The page will reload once you are logged out.",
+              success: (df) => {
+                window.location.href = window.location.href
+                return "You have been logged out."
+              },
+              error: (err) => {
+                return `An error occurred: ${err.toString()}`
+              },
+            })
+          },
         },
       ],
-      href: "/help",
     },
   ]
 
@@ -113,7 +196,7 @@ function Nav({ children }: Props) {
       <div className="flex flex-col h-full">
         {user ? (
           <>
-            {navItems.map((item) => (
+            {ListItems.map((item) => (
               <div
                 key={item.name}
                 className="flex flex-col border-b border-gray-800 py-4"
@@ -162,6 +245,64 @@ function Nav({ children }: Props) {
     </div>
   )
 
+  const CardComp = ({ project }: { project: any }) => {
+    const [hover, setHover] = useState(false)
+
+    return (
+      <Card
+        onMouseEnter={() => setHover(true)}
+        onMouseLeave={() => setHover(false)}
+        onClick={() =>
+          window.location.replace(
+            `/projects/${project?.db_name.replace(/\s/g, "-")}`
+          )
+        }
+        className={`${
+          hover ? " bg-gray-800/25" : " bg-accent-foreground"
+        }  grid gap-4 text-left col-span-2 my-2 w-96 cursor-pointer`}
+      >
+        <CardHeader>
+          <div className="flex flex-row justify-between">
+            <CardTitle>{project?.db_name}</CardTitle>
+            <MoveRight
+              id="arrowRight"
+              size={16}
+              className={`top-1/2 hidden lg:block ${
+                hover ? "animate-move-right-fixed" : ""
+              }`}
+            />
+          </div>
+          <CardDescription className="text-xs font-light grid grid-cols-2 justify-between gap-1 text-muted">
+            <Badge className="bg-gray-500/50 text-white font-light text-xs text-muted">
+              {project?.db_ref}
+            </Badge>
+            <div className="text-right w-full flex justify-end">
+              <Badge className="bg-gray-500/50 text-white text-xs font-light right-0 flex justify-end text-muted">
+                {project?.updated_at
+                  ? format(parseISO(project?.updated_at), "PP")
+                  : "N/A"}
+              </Badge>
+            </div>
+          </CardDescription>
+        </CardHeader>
+
+        <CardContent className="container flex flex-row">
+          <ul className="flex flex-row gap-4">
+            <li className="text-sm text-muted">
+              <Badge className="bg-green-500 text-white">Working</Badge>
+            </li>
+            <li className="text-sm text-muted">
+              <Badge className="bg-green-500 text-white">Working</Badge>
+            </li>
+            <li className="text-sm text-muted">
+              <Badge className="bg-green-500 text-white">Working</Badge>
+            </li>
+          </ul>
+        </CardContent>
+      </Card>
+    )
+  }
+
   const SmallScreenNav = (
     <>
       <div className="lg:hidden w-16 border-r border-gray-800 h-screen p-4">
@@ -171,15 +312,41 @@ function Nav({ children }: Props) {
           </DrawerTrigger>
           <DrawerContent className="w-screen px-4 space-x-2">
             <DrawerHeader>
-              <DrawerTitle></DrawerTitle>
-              <DrawerDescription>
-                This action cannot be undone.
+              <DrawerTitle className="grid grid-cols-1">
+                <Image
+                  src="/SupaBuddAi.svg"
+                  alt="Logo"
+                  width={600}
+                  height={600}
+                  className="w-full h-full object-contain"
+                />
+              </DrawerTitle>
+              <DrawerDescription className="relative">
+                {/* <LoadingLogo className="opacity-5 -z-10 absolute justify-center align-middle object-contain" /> */}
+                <Image
+                  src="/supabuddai-logo.png"
+                  alt="Logo"
+                  width={600}
+                  height={600}
+                  className="opacity-5 absolute justify-center align-middle object-contain"
+                />
               </DrawerDescription>
             </DrawerHeader>
 
             {user ? (
               <>
-                {navItems.map((item) => (
+                {projects && projects.length > 0 && (
+                  <>
+                    <ul className="[&>:children:not(:last-child)]:mb-4 [&>:nth-last-child(1)]:mb-8 border-b border-gray-800">
+                      {projects.slice(0, 3).map((project) => (
+                        <li key={project?.db_name}>
+                          <CardComp project={project} />
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+                {ListItems.map((item) => (
                   <div
                     key={item.name}
                     className="flex flex-col border-b border-gray-800 py-4"
@@ -234,9 +401,8 @@ function Nav({ children }: Props) {
             )}
 
             <DrawerFooter>
-              <Button>Submit</Button>
               <DrawerClose>
-                <Button variant="outline">Cancel</Button>
+                <Button variant="outline">Close</Button>
               </DrawerClose>
             </DrawerFooter>
           </DrawerContent>

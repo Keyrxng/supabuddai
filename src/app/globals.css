@@ -47,17 +47,6 @@
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
-
-
 @media (prefers-color-scheme: dark) {
   :root {
     /* Foreground and Background Colors */
@@ -102,6 +91,20 @@ body {
     --radius: 0.5rem;
   }
 }
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+
+
+
 ::-webkit-scrollbar {
   width: 0.5rem;
   height: 0.5rem;
