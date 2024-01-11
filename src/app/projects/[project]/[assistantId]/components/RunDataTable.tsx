@@ -22,6 +22,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TestGenTable } from "./TestGenTable"
 import { TestPlanTable } from "./TestPlanTable"
 import { Badge } from "@/components/ui/badge"
+import TestExecCard from "./TestExecCard"
 
 const supabase = createClientComponentClient({
   supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -67,6 +68,7 @@ function RunDataTable({
     const json = await data.json()
 
     console.log("handleRefresh: ", json)
+    
 
     setRecentRun(json)
   }
@@ -185,7 +187,7 @@ function RunDataTable({
                 <>
                   <div className="flex flex-row justify-between ">
                     {recentRun && (
-                      <div className="h-full w-full ">Component to come</div>
+                      <TestExecCard assistantId={assistantId} runId={threadToUse?.[0].run_id} threadId={threadToUse?.[0].thread_id}  work={recentRun} />
                     )}
                   </div>
                 </>

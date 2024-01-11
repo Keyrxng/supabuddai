@@ -99,6 +99,7 @@ export async function handleViewFile({
     })
 
     const json = await data.json()
+    console.log("File data", json)
 
     if (json.error) {
       toast.error(json.error.message)

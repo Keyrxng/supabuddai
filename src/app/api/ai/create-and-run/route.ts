@@ -18,7 +18,7 @@ export async function POST(request: Request) {
 
   const agent = new Agent(process.env.OPENAI_API_KEY!)
 
-  const run = await agent.runThread(fileIds, assistantId, userId)
+  const run = await agent.runThread(assistantId, userId)
 
   return new Response(JSON.stringify(run), {
     status: 200,

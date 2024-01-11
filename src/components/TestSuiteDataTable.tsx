@@ -133,7 +133,9 @@ export function TestPlanDataTable({ work }: { work: any[] }) {
 
     if (!dataa) return result
 
-    dataa.map((w) => {
+    const d = Array.isArray(dataa) ? dataa : [dataa]
+
+    d.map((w) => {
       w.tests.map((t) => {
         const entry = {
           index: w.index,

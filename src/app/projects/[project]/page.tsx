@@ -150,11 +150,11 @@ END;`
           project={project}
           db_key={db[0]?.db_key}
           db_url={db[0]?.db_url}
-          pols={projReqs[0].rls}
+          pols={projReqs?.[0]?.rls}
         />
       </div>
       <div className="col-span-1">
-        <SchemaTable db_ref={db[0]?.db_ref} schema={projReqs[0].schema} />
+        <SchemaTable db_ref={db[0]?.db_ref} schema={projReqs?.[0]?.schema} />
       </div>
     </div>
   )

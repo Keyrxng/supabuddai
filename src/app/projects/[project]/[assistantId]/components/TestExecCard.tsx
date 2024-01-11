@@ -1,6 +1,6 @@
 "use client"
 
-import * as React from "react"
+import React, { useEffect, useState } from "react"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import {
   ColumnDef,
@@ -14,6 +14,7 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table"
+import { CSSTransition, TransitionGroup } from "react-transition-group"
 import { toast } from "sonner"
 
 import {
@@ -28,12 +29,23 @@ import {
 import { Button } from "../../../../../components/ui/button"
 import { Checkbox } from "../../../../../components/ui/checkbox"
 
-export type TestProps = {
-  schema: string
+interface ApiResponse {
+  index: number
+  value: boolean
+}
+
+interface DataRow {
+  status: string
+  schemaName: string
   table: string
   policy: string
   test: string
 }
+
+const supabase = createClientComponentClient({
+  supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_KEY,
+  supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+})
 
 export const columns: ColumnDef<TestProps>[] = [
   {
@@ -59,7 +71,11 @@ export const columns: ColumnDef<TestProps>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "schema",
+    accessorKey: "status",
+    header: "Status",
+  },
+  {
+    accessorKey: "schemaName",
     header: "Schema",
   },
   {
@@ -69,87 +85,21 @@ export const columns: ColumnDef<TestProps>[] = [
   {
     accessorKey: "policy",
     header: "Policy",
-    maxSize: 100,
   },
   {
     accessorKey: "test",
-    header: ({ table }) => (
-      <div className="flex items-center gap-4 w-full">
-        <div>Test</div>
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.setExpanded(true)}
-          >
-            Expand all
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.setExpanded(false)}
-          >
-            Collapse all
-          </Button>
-        </div>
-      </div>
-    ),
-    enableResizing: true,
-    enableHiding: true,
-    cell: ({ row, cell }) => (
-      <div className="flex items-center gap-4 w-full">
-        <div className="flex items-center space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => row.toggleExpanded()}
-          >
-            {row.getIsExpanded() ? "Collapse" : "Expand"}
-          </Button>
-        </div>
-        <div
-          data-state="active"
-          data-orientation="horizontal"
-          role="tabpanel"
-          aria-labelledby="radix-:rd:-trigger-code"
-          id="radix-:rd:-content-code"
-          className="ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-        >
-          <div className="flex flex-col">
-            <div
-              className={`${
-                row.getIsExpanded() ? "block" : "hidden"
-              } w-full rounded-md [&amp;_pre]:my-0 [&amp;_pre]:max-h-[350px] [&amp;_pre]:overflow-auto`}
-            >
-              <div data-rehype-pretty-code-fragment="">
-                <pre
-                  className="mb-4 max-h-[280px] overflow-x-auto rounded-lg border bg-zinc-950  dark:bg-zinc-900"
-                  data-language="tsx"
-                  data-theme="default"
-                >
-                  <code
-                    className={`relative rounded bg-muted font-mono text-sm`}
-                    data-language="tsx"
-                    data-theme="default"
-                  >
-                    {cell.getValue()}
-                  </code>
-                </pre>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    ),
+    header: "Test",
   },
 ]
 
-const supabase = createClientComponentClient({
-  supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_KEY,
-  supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
-})
+export type TestProps = {
+  schema: string
+  table: string
+  policy: string
+  test: string
+}
 
-export function TestGenDataTable({
+export function TestExecCard({
   threadId,
   assistantId,
   runId,
@@ -163,21 +113,71 @@ export function TestGenDataTable({
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [rls, setRls] = React.useState<TestProps[]>([
     {
-      schema: "test",
+      status: true,
+      schemaName: "test",
+      table: "test",
+      policy: "test",
+      test: "test",
+    },
+    {
+      status: false,
+      schemaName: "test",
       table: "test",
       policy: "test",
       test: "test",
     },
   ])
   const [rowSelection, setRowSelection] = React.useState({})
+  const [data, setData] = useState<DataRow[]>([])
+
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
 
+  useEffect(() => {
+    const fetchData = async () => {
+      /**
+         * status: apiResponse.value ? "PASS" : "FAIL",
+      schemaName: "test",
+      table: "test",
+      policy: "test",
+      test: "test",
+         */
+
+      const response = {
+        index: 1,
+        value: Math.random() % 2 === 0,
+      }
+      processNewData(response)
+    }
+
+    // Set an interval for polling (or setup WebSocket connection)
+    const intervalId = setInterval(fetchData, 25000) // 1 second polling
+
+    return () => clearInterval(intervalId)
+  }, [])
+
+  const processNewData = (newData: ApiResponse) => {
+    const additionalData = fetchAdditionalData(newData) // Implement this function
+    setData((prevData) => [additionalData, ...prevData])
+  }
+
+  // Implement this function to fetch additional data based on the index from the API response
+  const fetchAdditionalData = (apiResponse: ApiResponse): DataRow => {
+    // Fetching logic here
+    return {
+      status: apiResponse.value ? "PASS" : "FAIL",
+      schemaName: "test",
+      table: "test",
+      policy: "test",
+      test: "test",
+    }
+  }
+
   const table = useReactTable({
-    data: Array.isArray(work) ? work : [work],
+    data: data,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -310,23 +310,9 @@ export function TestGenDataTable({
       <div>
         <div className="rounded-md border">
           <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id}>
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              ))}
-            </TableHeader>
             <TableBody>
               {table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow key={row.id} className="slide-in-animation">
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
                       {flexRender(
@@ -344,3 +330,5 @@ export function TestGenDataTable({
     </div>
   )
 }
+
+export default TestExecCard

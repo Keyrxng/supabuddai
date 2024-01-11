@@ -19,10 +19,7 @@ export default function RootLayout(params: { children: React.ReactNode }) {
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <main className="min-h-screen">
-            <Nav>{params.children}</Nav>
-          </main>
-
+          <main className="min-h-screen">{params.children}</main>
           <Toaster />
         </ThemeProvider>
       </body>

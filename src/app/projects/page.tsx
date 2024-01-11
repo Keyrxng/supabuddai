@@ -13,6 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import HomeHero from "@/components/HomeHero"
 
 type Props = {}
 const supabase = createClientComponentClient({
@@ -77,16 +78,17 @@ export default function Page({}: Props) {
               }`}
             />
           </div>
-          <CardDescription className="text-xs grid grid-cols-2 justify-between gap-1 text-muted">
-            <Badge className="bg-gray-500/50 text-white text-xs text-muted">
+          <CardDescription className="text-xs font-light grid grid-cols-2 justify-between gap-1 text-muted">
+            <Badge className="bg-gray-500/50 text-white font-light text-xs text-muted">
               {project?.db_ref}
             </Badge>
-            <Badge className="bg-gray-500/50 text-white text-xs text-muted">
-              Last Check:{" "}
-              {project?.updated_at
-                ? format(parseISO(project?.updated_at), "PP")
-                : "N/A"}
-            </Badge>
+            <div className="text-right w-full flex justify-end">
+              <Badge className="bg-gray-500/50 text-white text-xs font-light right-0 flex justify-end text-muted">
+                {project?.updated_at
+                  ? format(parseISO(project?.updated_at), "PP")
+                  : "N/A"}
+              </Badge>
+            </div>
           </CardDescription>
         </CardHeader>
 
@@ -137,6 +139,8 @@ export default function Page({}: Props) {
               />
             </>
           )}
+
+          {!projects || (projects.length === 0 && <HomeHero />)}
         </div>
       </Suspense>
       {projects && projects.length === 0 && (

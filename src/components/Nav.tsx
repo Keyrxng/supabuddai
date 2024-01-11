@@ -1,12 +1,10 @@
 "use client"
 
 import React, { useEffect, useState } from "react"
-import Image from "next/image"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { BadgeHelp, Menu, UserCircle, UserPlus, Workflow } from "lucide-react"
 
-import { ConnectedBlinker } from "./connectedBlinker"
-import { ThemeToggle } from "./theme-toggle"
+import TopNav from "./TopNav"
 import { Button } from "./ui/button"
 import {
   Drawer,
@@ -249,41 +247,15 @@ function Nav({ children }: Props) {
 
   return (
     <>
-      {/* TopNav */}
       <div className="grid grid-cols-12 min-h-screen ">
-        <div className="col-span-12 flex items-center sticky w-full justify-between border-gray-800 border-b">
-          <div className="border-r border-gray-800 h-16 lg:w-64 w-16 flex justify-between align-middle text-center">
-            <div className="w-full">
-              <Image
-                src="/supabuddai.svg"
-                alt="Logo"
-                width={600}
-                height={600}
-                className="w-full h-full object-cover"
-              />
-            </div>
-          </div>
-          <div className="col-span-12">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center">
-                <Button className="mr-4">Search</Button>
-                <Button className="mr-4">Notifications</Button>
-                <ConnectedBlinker />
-                <ThemeToggle />
-              </div>
-            </div>
-          </div>
-        </div>
-        {/* Top Nav */}
+        <TopNav />
 
         <div className="ml-8 lg:ml-[265px] mt-16 absolute w-auto">
           {children}
         </div>
 
-        {/* Side Nav */}
         {LargeScreenNav}
         {SmallScreenNav}
-        {/* Side Nav */}
       </div>
     </>
   )
