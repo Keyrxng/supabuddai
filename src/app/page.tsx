@@ -520,19 +520,6 @@ export default function Page() {
                           return
                         }
 
-                        const emailRegex = new RegExp(
-                          // eslint-disable-next-line no-control-regex
-                          "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]" +
-                            "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?" +
-                            "(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}" +
-                            "[a-zA-Z0-9])?)*$"
-                        )
-
-                        if (!emailRegex.test(email.value)) {
-                          toast.error("Please enter a valid email address.")
-                          return
-                        }
-
                         joinWaitlist(email.value, name.value)
                       }}
                     >
@@ -575,8 +562,8 @@ export default function Page() {
               Ship Faster with Confidence
             </h2>
             <p className="text-gray-300 mt-2">
-              Knowing that your data is secured the way you need it to be, so
-              you can focus on what matters most.
+              Knowing that your data is secured the way you need it to be, you
+              write the rules, we&apos;ll enforce them.
             </p>
             <div className="mt-4 flex justify-center">
               <Badge className="animate-pulse hover:text-white cursor-default hover:bg-[#3ecf95]/50 bg-[#3ecf95] text-black">
@@ -611,9 +598,9 @@ export default function Page() {
               AI Trained on Your Data
             </h2>
             <p className="text-gray-300 mt-2">
-              Your data is unique, and so are your security needs. SupaBuddAi
-              learns from your data to create a custom-tailored security
-              framework with a deep understanding of your database.
+              Your data is unique, and so are your security needs. SupaBuddAi is
+              trained on your database and data structure, allowing granular and
+              precise security testing and enforcement.
             </p>
             <div className="mt-4 flex justify-center">
               <Badge className="animate-pulse hover:text-white cursor-default hover:bg-[#3ecf95]/50 bg-[#3ecf95] text-black">
@@ -631,8 +618,8 @@ export default function Page() {
               User-Friendly
             </h2>
             <p className="text-gray-300 cursor-default mt-2">
-              Navigate through our user-friendly dashboard for real-time
-              security insights and control at your fingertips.
+              A simple, intuitive interface makes it easy to get started and
+              stay secure.
             </p>
             <div className="grid md:flex p-6 md:p-0 justify-center mt-4">
               <ResizablePanelGroup
