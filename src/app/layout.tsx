@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
+import { Analytics } from "@vercel/analytics/react"
 
 import "./globals.css"
 
@@ -69,6 +70,7 @@ export default function RootLayout(params: { children: React.ReactNode }) {
               </div>
             </footer>
           </div>
+          <Analytics />
           <Toaster />
         </ThemeProvider>
       </body>
