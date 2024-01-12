@@ -178,7 +178,11 @@ export const ConnectedBlinker = () => {
       }}
     >
       <DropdownMenuTrigger>
-        <Button variant="outline" className="flex justify-between gap-4">
+        <Button
+          suppressHydrationWarning
+          variant="outline"
+          className="flex justify-between gap-4"
+        >
           <div
             id="connected-blinker"
             className={`w-4 h-4 rounded-full animate-pulse`}
@@ -205,7 +209,10 @@ export const ConnectedBlinker = () => {
                                   href={child.href}
                                   className="w-full flex text-left left-0 justify-start hover:bg-slate-600"
                                 >
-                                  <Button className="w-full flex text-left left-0 justify-start hover:bg-slate-600">
+                                  <Button
+                                    suppressHydrationWarning
+                                    className="w-full flex text-left left-0 justify-start hover:bg-slate-600"
+                                  >
                                     <child.icon className="mr-2 h-4 w-4" />
                                     {child.name}
                                   </Button>
@@ -232,6 +239,7 @@ export const ConnectedBlinker = () => {
                       <DropdownMenuSub>
                         <DropdownMenuSubTrigger>
                           <Button
+                            suppressHydrationWarning
                             onClick={() => item.action?.()}
                             className="w-full flex text-left left-0 justify-start hover:bg-slate-600"
                           >

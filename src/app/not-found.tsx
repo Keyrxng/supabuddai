@@ -1,10 +1,15 @@
-import React from "react"
+"use client"
+
+import React, { useEffect } from "react"
 import Image from "next/image"
 
 import { Button } from "@/components/ui/button"
-import NavLogo from "@/components/NavLogo"
 
 function Page({}) {
+  const [isClient, setIsClient] = React.useState(false)
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
   return (
     <div className="grid  items-center justify-center h-screen space-y-4">
       <div className="flex flex-col items-center -space-y-2 ">
@@ -12,13 +17,15 @@ function Page({}) {
           You&apos;re off the beaten track
         </h1>
         <a href="/" className="z-10" rel="noopener noreferrer">
-          <Button
-            size="lg"
-            variant="outline"
-            className="mt-1 animate-bounce text-lg h-min w-min border-[0.1px] shadow-md drop-shadow-md shadow-[#1a1a1a] border-[#ffffff4b] bg-[#3ecf95]/65 hover:bg-[#3ecf95]/55"
-          >
-            <span className="">Go Back</span>
-          </Button>{" "}
+          {isClient && (
+            <Button
+              size="lg"
+              variant="outline"
+              className="mt-1 animate-bounce text-lg h-min w-min border-[0.1px] shadow-md drop-shadow-md shadow-[#1a1a1a] border-[#ffffff4b] bg-[#3ecf95]/65 hover:bg-[#3ecf95]/55"
+            >
+              <span className="">Go Back</span>{" "}
+            </Button>
+          )}
         </a>{" "}
       </div>
       <Image

@@ -85,6 +85,7 @@ export function LoginCard({
             </div>
           </div>
           <Button
+            suppressHydrationWarning
             onSubmit={handleSubmit}
             type="submit"
             className="hover:bg-gray-700/75 my-2 items-center justify-center w-full"

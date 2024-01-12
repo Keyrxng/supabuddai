@@ -87,6 +87,7 @@ export function NewProjectCard() {
             </div>
           </div>
           <Button
+            suppressHydrationWarning
             onSubmit={(e) => handleSubmit(e)}
             type="submit"
             className="hover:bg-slate-600 mt-2 w-full"

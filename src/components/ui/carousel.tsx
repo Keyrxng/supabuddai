@@ -202,6 +202,7 @@ const CarouselPrevious = React.forwardRef<
 
   return (
     <Button
+      suppressHydrationWarning
       ref={ref}
       variant={variant}
       size={size}
@@ -232,6 +233,7 @@ const CarouselNext = React.forwardRef<
   return (
     <Button
       ref={ref}
+      suppressHydrationWarning
       variant={variant}
       size={size}
       className={cn(
