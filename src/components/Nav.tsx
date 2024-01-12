@@ -18,11 +18,9 @@ import {
   User,
   UserCircle,
   UserPlus,
-  Workflow,
 } from "lucide-react"
 import { toast } from "sonner"
 
-import LoadingLogo from "./LoadingLogo"
 import TopNav from "./TopNav"
 import { Badge } from "./ui/badge"
 import { Button } from "./ui/button"
@@ -101,6 +99,7 @@ function Nav({ children }: Props) {
         return
       }
 
+      // @ts-ignore
       setUser(data.session?.user)
 
       const { data: userProjects, error: projectsError } = await supabase
@@ -108,6 +107,7 @@ function Nav({ children }: Props) {
         .select("*")
         .eq("user_id", data.session?.user?.id)
 
+      // @ts-ignore
       setProjects(userProjects)
     }
     load()
@@ -289,13 +289,17 @@ function Nav({ children }: Props) {
         <CardContent className="container flex flex-row">
           <ul className="flex flex-row gap-4">
             <li className="text-sm text-muted">
-              <Badge className="bg-green-500 text-white">Working</Badge>
+              <Badge className="border-[#3ecf95] bg-[#3ecf95] text-black">
+                Planning
+              </Badge>
             </li>
             <li className="text-sm text-muted">
-              <Badge className="bg-green-500 text-white">Working</Badge>
+              <Badge className="border-[#3ecf95] bg-[#3ecf95] text-black">
+                Generation
+              </Badge>
             </li>
             <li className="text-sm text-muted">
-              <Badge className="bg-green-500 text-white">Working</Badge>
+              <Badge className="border-[#3ecf95] text-white">Execution</Badge>
             </li>
           </ul>
         </CardContent>
@@ -338,11 +342,17 @@ function Nav({ children }: Props) {
                 {projects && projects.length > 0 && (
                   <>
                     <ul className="[&>:children:not(:last-child)]:mb-4 [&>:nth-last-child(1)]:mb-8 border-b border-gray-800">
-                      {projects.slice(0, 3).map((project) => (
-                        <li key={project?.db_name}>
-                          <CardComp project={project} />
-                        </li>
-                      ))}
+                      {projects
+                        .slice(0, 3)
+                        .reverse()
+                        .map((project) => (
+                          <li
+                            // @ts-ignore
+                            key={project?.db_name}
+                          >
+                            <CardComp project={project} />
+                          </li>
+                        ))}
                     </ul>
                   </>
                 )}

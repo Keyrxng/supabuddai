@@ -9,9 +9,7 @@ function LoadingLogo({}: Props) {
   const containerRef = useRef(null)
   const ref = useRef(null)
   const [gradientPos, setGradientPos] = useState({ x: 0, y: 0 })
-  const [intensity, setIntensity] = useState(350)
-  const [isActive, setIsActive] = useState(false)
-  const handleGlow = (event) => {
+  const handleGlow = (event: any) => {
     if (!ref.current || !containerRef.current) return null
     const containerRefElement = containerRef.current as HTMLDivElement
     if (event.target.id !== "glowElement") return
@@ -29,7 +27,6 @@ function LoadingLogo({}: Props) {
       xCont < containerWidth + 3 &&
       yCont > -3 &&
       yCont < containerHeight + 3
-    setIsActive(isContainerHovered)
 
     if (!isContainerHovered) return
 
@@ -45,20 +42,6 @@ function LoadingLogo({}: Props) {
     const y = event.clientY - svgY
 
     setGradientPos({ x, y })
-
-    const glowElement = event.target
-
-    const center_x = x + width / 2
-    const center_y = y + height / 2
-    const mouse_x = event.clientX
-    const mouse_y = event.clientY
-
-    const deltaX = center_x - mouse_x
-    const deltaY = center_y - mouse_y
-    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
-
-    const intensity = Math.min(150 / distance, 1)
-    const colorIntensity = Math.floor(255 * intensity)
   }
 
   useEffect(() => {

@@ -3,19 +3,13 @@
 import { useEffect, useRef, useState } from "react"
 import Image from "next/image"
 
-function NavLogo({
-  className,
-  imgSize,
-}: {
-  className?: string
-  imgSize: string
-}) {
+function NavLogo({ className }: { className?: string }) {
   const containerRef = useRef(null)
   const ref = useRef(null)
   const [gradientPos, setGradientPos] = useState({ x: 0, y: 0 })
   const [isActive, setIsActive] = useState(false)
 
-  const handleGlow = (event) => {
+  const handleGlow = (event: any) => {
     if (!ref.current || !containerRef.current) return null
     const containerRefElement = containerRef.current as HTMLDivElement
     if (event.target.id !== "glowElement") return

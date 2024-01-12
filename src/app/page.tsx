@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useState } from "react"
 import Image from "next/image"
 import router from "next/router"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
@@ -15,7 +15,6 @@ import {
   User,
   UserCircle,
   UserPlus,
-  Workflow,
 } from "lucide-react"
 import { toast } from "sonner"
 
@@ -38,11 +37,20 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer"
+import { Input } from "@/components/ui/input"
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable"
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 import NavLogo from "@/components/NavLogo"
 import { NavigationMenuDemo } from "@/components/NavMenuItems"
 
@@ -86,7 +94,7 @@ const supabase = createClientComponentClient({
 })
 
 export default function Page() {
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState<any>(null)
 
   useEffect(() => {
     async function load() {
@@ -97,9 +105,7 @@ export default function Page() {
         return
       }
 
-      setUser(data)
-
-      console.log("data: ", data)
+      setUser(data.session?.user)
     }
     load()
   }, [])
@@ -107,7 +113,7 @@ export default function Page() {
   const [hover, setHover] = useState(false)
   const [hidePill, setHidePill] = useState(false)
 
-  const handleGlow = (event) => {
+  const handleGlow = (event: any) => {
     if (!event.target) return
     if (event.target.accessKey !== "glowElement") return
     const glowElement = event.target
@@ -123,9 +129,7 @@ export default function Page() {
     const deltaY = center_y - mouse_y
     const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
 
-    // Adjust these values based on the desired intensity and distance threshold
     const intensity = Math.min(150 / distance, 1)
-    const colorIntensity = Math.floor(255 * intensity)
 
     glowElement.style.boxShadow = `0 0 15px rgba(62, 207, 149, ${intensity})`
     glowElement.style.border = `1px solid rgba(62, 207, 149, ${intensity})`
@@ -218,34 +222,47 @@ export default function Page() {
     },
   ]
 
+  const joinWaitlist = async (email: any, name: any) => {
+    const { data, error } = await supabase.from("waitlist").insert({
+      email: email,
+      name: name,
+    })
+
+    if (error) {
+      toast.error(error.message)
+    } else {
+      toast.success("You've been added to the waitlist!")
+    }
+  }
+
   return (
     <>
       <div className="w-full border-b border-gray-800 h-16 flex justify-center justify-items-center align-middle text-center">
-        <div className="col-span-12 flex items-center sticky w-full text-center align-middle  inset-0 top-0 justify-between border-gray-800 ">
-          <div className=" h-16 w-full align-middle self-center items-center">
-            <div className="w-full flex">
-              <a href="/" className="left-0">
+        <div className="col-span-12 flex items-center w-full text-center align-middle  inset-0 top-0 justify-between border-gray-800 ">
+          <div className="h-16 w-full flex align-middle self-center items-center">
+            <div className="">
+              <a href="/">
                 <Image
                   src="/supabuddai.svg"
                   alt="Logo"
                   width={600}
                   height={600}
-                  className={`hidden sm:inline-block w-52 pt-2 sm:w-76 sm:pt-2 h-full object-cover`}
+                  className={`hidden sm:inline-block w-52 sm:w-76 m-0.5 h-full object-cover`}
                 />
                 <Image
                   src="/supabuddai-logo.png"
                   alt="Logo"
                   width={160}
                   height={160}
-                  className={`pt-1 left-0 h-14 sm:hidden object-contain min-w-fit`}
+                  className={`pt-1 h-14 sm:hidden object-contain min-w-fit`}
                 />
               </a>
-              <div
-                onMouseEnter={() => setHidePill(true)}
-                onMouseLeave={() => setHidePill(false)}
-              >
-                <NavigationMenuDemo />
-              </div>
+            </div>
+            <div
+              onMouseEnter={() => setHidePill(true)}
+              onMouseLeave={() => setHidePill(false)}
+            >
+              <NavigationMenuDemo />
             </div>
           </div>
           <div className="col-span-12 w-max">
@@ -348,81 +365,141 @@ export default function Page() {
           </div>
         </div>
       </div>
+
       <div className="container mx-auto">
-        <div className="grid grid-flow-row text-center min-h-screen m-4">
-          <article className="col-span-1 font-light text-center align-middle justify-center object-center items-center">
-            <div
-              className={`${
-                hidePill ? "" : "relative z-10"
-              } w-fit mx-auto h-min px-2  `}
-            >
-              <a href="/projects">
-                <div
-                  onMouseEnter={() => setHover(true)}
-                  onMouseLeave={() => setHover(false)}
-                  accessKey="glowElement"
-                  className="cursor-pointer grid rounded-full h-min shadow-md shadow-[#1a1a1a] grid-flow-col-dense gap-2 text-center font-bold my-8 p-1.0 bg-[#313131]"
-                >
-                  <div className="flex items-center  m-[4px] justify-center gap-2 ">
-                    <div className="flex p-1  rounded-full border h-fit justify-between text-center text-xs font-medium text-[#3ecf95] border-[#3ecf95]">
-                      Coming Soon!
-                    </div>
-                    <div className="flex  align-middle mr-3 h-min items-center gap-2 text-xs font-medium">
-                      Take a look at the MVP{" "}
-                      <MoveRight
-                        className={`${
-                          hover ? "animate-nudge-right" : ""
-                        } h-4 w-4 `}
-                      />
+        <div className="grid grid-flow-row text-center min-h-screen m-4 ease-in repeat-1 transition-all duration-1000 animate-in animate-fade-in slide-in-from-bottom-12">
+          <div>
+            <article className="col-span-1 font-light text-center align-middle justify-center object-center items-center">
+              <div
+                className={`${
+                  hidePill ? "" : "relative z-10"
+                } w-fit mx-auto h-min px-2  `}
+              >
+                <a href="#mvp">
+                  <div
+                    onMouseEnter={() => setHover(true)}
+                    onMouseLeave={() => setHover(false)}
+                    accessKey="glowElement"
+                    className="cursor-pointer grid rounded-full h-min shadow-md shadow-[#1a1a1a] grid-flow-col-dense gap-2 text-center font-bold my-8 p-1.0 bg-[#313131]"
+                  >
+                    <div className="flex items-center  m-[4px] justify-center gap-2 ">
+                      <div className="flex p-1  rounded-full border h-fit justify-between text-center text-xs font-medium text-[#3ecf95] border-[#3ecf95]">
+                        Coming Soon!
+                      </div>
+                      <div className="flex  align-middle mr-3 h-min items-center gap-2 text-xs font-medium">
+                        Take a look at the MVP{" "}
+                        <MoveRight
+                          className={`${
+                            hover ? "animate-nudge-right" : ""
+                          } h-4 w-4 `}
+                        />
+                      </div>
                     </div>
                   </div>
-                </div>
-              </a>
-            </div>
+                </a>
+              </div>
+              <h1 className="text-5xl sm:text-7xl text-center from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
+                SupaBuddAi<span className="text-[#3ecf95]">.</span>
+              </h1>
 
-            <h1 className="text-5xl sm:text-7xl text-center from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
-              SupaBuddAi<span className="text-[#3ecf95]">.</span>
-            </h1>
+              <h2 className="text-xl mt-1 text-center text-[#3ecf95]">
+                Know your data is secured the way you{" "}
+                <span className="text-gray-400/50 line-through">want</span>{" "}
+                <span className="italic">need</span> it to be.
+              </h2>
 
-            <h2 className="text-xl mt-1 text-center text-[#3ecf95]">
-              Know your data is secured the way you{" "}
-              <strike className="text-gray-400/50 ">want</strike>{" "}
-              <span className="italic">need</span> it to be.
-            </h2>
+              <div className="flex flex-col text-center items-center justify-center ">
+                <h3 className="text-center max-w-2xl font-medium text-[#ffffffe0]">
+                  <div className="text-2xl">
+                    <p className="text-lg font-medium mt-4">
+                      As you define your database, let us fortify it. We
+                      aggregate your RLS policies and schema into TypeScript
+                      types, transforming them into a robust foundation for your
+                      custom AI-driven security framework.
+                    </p>
 
-            <div className="flex flex-col text-center items-center justify-center ">
-              <h3 className="text-center max-w-2xl font-medium text-[#ffffffe0]">
-                <div className="text-2xl">
-                  <p className="text-lg font-medium mt-4">
-                    As you define your database, let us fortify it. We aggregate
-                    your RLS policies and schema into TypeScript types,
-                    transforming them into a robust foundation for your custom
-                    AI-driven security framework.
-                  </p>
+                    <p className="text-sm text-gray-400/90 mt-4">
+                      Step into a new era of database security automation.
+                      <br />
+                      Whether pre-MVP or post-launch,{" "}
+                      <span className="italic">
+                        we&apos;ve got you covered.
+                      </span>
+                    </p>
+                  </div>
+                </h3>
+              </div>
 
-                  <p className="text-sm text-gray-400/50 mt-4">
-                    Step into a new era of database security automation.
-                    <br />
-                    Whether pre-MVP or post-launch,{" "}
-                    <span className="italic">we've got you covered.</span>
-                  </p>
-                </div>
-              </h3>
-            </div>
-            <Button
-              className="mt-4 z-10 relative text-lg h-min w-min border-[0.1px] shadow-md drop-shadow-md shadow-[#1a1a1a] border-[#ffffff4b] bg-[#3ecf95]/65 hover:bg-[#3ecf95]/55"
-              size="lg"
-              accessKey="glowElement"
-            >
-              Join the waitlist
-            </Button>
-          </article>
+              <Sheet>
+                <SheetTrigger>
+                  <Button
+                    size="lg"
+                    accessKey="glowElement"
+                    className="mt-4 z-10 relative text-lg h-min w-min border-[0.1px] shadow-md drop-shadow-md shadow-[#1a1a1a] border-[#ffffff4b] bg-[#3ecf95]/65 hover:bg-[#3ecf95]/55"
+                  >
+                    Join the waitlist
+                  </Button>
+                </SheetTrigger>
+                <SheetContent className="w-full mr-9 ">
+                  <SheetHeader className="ml-3">
+                    <SheetTitle className="flex flex-col items-center">
+                      <div className="flex items-center justify-center">
+                        <Image
+                          src="/supabuddai-logo.png"
+                          alt="Logo"
+                          width={600}
+                          height={600}
+                          className="w-full h-full object-contain"
+                        />
+                      </div>
 
-          <NavLogo
-            imgSize=""
-            className="h-min inset-0 mt-[5rem] absolute mx-auto grid opacity-20 justify-center items-center"
-          />
+                      <h2 className="text-2xl font-semibold text-[#3ecf95]">
+                        Thanks for your interest!
+                      </h2>
+                    </SheetTitle>
+                    <SheetDescription>
+                      <div className="flex flex-col text-center items-center">
+                        <p className="text-gray-300 mt-2">
+                          Launch is expected in the next few weeks and
+                          we&apos;ll be sending out invites soon.
+                        </p>
+                      </div>
+                    </SheetDescription>
+                    <form
+                      className="flex flex-col items-center gap-3"
+                      onSubmit={(e) => {
+                        e.preventDefault()
+                        // @ts-ignore
+                        const { email, name } = e.target.elements
+                        joinWaitlist(email.value, name.value)
+                      }}
+                    >
+                      <Input
+                        type="text"
+                        id="name"
+                        html-for="name"
+                        placeholder="Preferred Name"
+                      />
+                      <Input
+                        type="email"
+                        id="email"
+                        html-for="email"
+                        placeholder="Email Address"
+                      />
+                      <Button
+                        type="submit"
+                        className="shadow-[#1a1a1a] border-[#ffffff4b] bg-[#3ecf95]/65 hover:bg-[#3ecf95]/55"
+                      >
+                        Register Interest
+                      </Button>
+                    </form>
+                  </SheetHeader>
+                </SheetContent>
+              </Sheet>
+            </article>
 
+            <NavLogo className="h-min inset-0 mt-[5rem] absolute mx-auto grid opacity-20 justify-center items-center" />
+          </div>
           <div
             onMouseMove={handleGlow}
             className="my-8 mx-auto max-w-4xl p-4 cursor-default bg-[#1a1a1a] rounded-lg shadow-lg transition duration-500 hover:scale-105"
@@ -481,10 +558,11 @@ export default function Page() {
 
           <div
             accessKey="glowElement"
+            id="mvp"
             className="my-8 mx-auto max-w-4xl p-4 bg-[#313131] rounded-lg shadow-lg transition duration-500 hover:scale-105"
           >
             <h2 className="text-3xl cursor-default font-semibold text-[#3ecf95]">
-              Intuitive Dashboard
+              User-Friendly
             </h2>
             <p className="text-gray-300 cursor-default mt-2">
               Navigate through our user-friendly dashboard for real-time
@@ -495,11 +573,11 @@ export default function Page() {
                 direction="horizontal"
                 className="w-full h-full hidden md:block rounded-lg shadow-lg transition duration-500 hover:scale-105"
               >
-                <ResizablePanel defaultSize={100} className="hidden md:block">
+                <ResizablePanel defaultSize={50} className="hidden md:block">
                   <div className="flex h-[500px] items-center justify-center p-6">
                     <span className="font-semibold">
                       <Image
-                        src="/dashboard-preview.jpg"
+                        src="/mobile-menu.png"
                         alt="Dashboard Preview"
                         width={600}
                         height={400}
@@ -515,7 +593,7 @@ export default function Page() {
                       <div className="flex h-full items-center justify-center p-4">
                         <span className="font-semibold">
                           <Image
-                            src="/dashboard-preview.jpg"
+                            src="/project-setup.png"
                             alt="Dashboard Preview"
                             width={600}
                             height={400}
@@ -529,7 +607,7 @@ export default function Page() {
                       <div className="flex h-full items-center justify-center p-6">
                         <span className="font-semibold">
                           <Image
-                            src="/dashboard-preview.jpg"
+                            src="/planning-phase.png"
                             alt="Dashboard Preview"
                             width={600}
                             height={400}

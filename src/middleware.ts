@@ -8,7 +8,7 @@ export async function middleware(req: NextRequest) {
   const sesh = await supabase.auth.getSession()
 
   if (!sesh) {
-    return NextResponse.redirect("/login")
+    // return NextResponse.redirect("/login")
   }
 
   return res

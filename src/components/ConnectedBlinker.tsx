@@ -74,6 +74,7 @@ export const ConnectedBlinker = () => {
       authListener?.subscription.unsubscribe()
       setNeedsReload(!needsReload)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [needsReload])
 
   const router = useRouter()
@@ -196,25 +197,29 @@ export const ConnectedBlinker = () => {
                       <DropdownMenuItem key={child.name}>
                         {child.icon && (
                           <>
-                            {child.href ? (
-                              <a
-                                href={child.href}
-                                className="w-full flex text-left left-0 justify-start hover:bg-slate-600"
-                              >
-                                <Button className="w-full flex text-left left-0 justify-start hover:bg-slate-600">
+                            {
+                              // @ts-ignore
+                              child.href ? (
+                                <a
+                                  // @ts-ignore
+                                  href={child.href}
+                                  className="w-full flex text-left left-0 justify-start hover:bg-slate-600"
+                                >
+                                  <Button className="w-full flex text-left left-0 justify-start hover:bg-slate-600">
+                                    <child.icon className="mr-2 h-4 w-4" />
+                                    {child.name}
+                                  </Button>
+                                </a>
+                              ) : (
+                                <Button
+                                  onClick={() => child.action?.()}
+                                  className="w-full flex text-left left-0 justify-start hover:bg-slate-600"
+                                >
                                   <child.icon className="mr-2 h-4 w-4" />
                                   {child.name}
                                 </Button>
-                              </a>
-                            ) : (
-                              <Button
-                                onClick={() => child.action?.()}
-                                className="w-full flex text-left left-0 justify-start hover:bg-slate-600"
-                              >
-                                <child.icon className="mr-2 h-4 w-4" />
-                                {child.name}
-                              </Button>
-                            )}
+                              )
+                            }
                           </>
                         )}
                       </DropdownMenuItem>

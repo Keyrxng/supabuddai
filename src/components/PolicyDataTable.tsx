@@ -39,6 +39,28 @@ export type RLSPolicy = {
 
 export const columns: ColumnDef<RLSPolicy>[] = [
   {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
     accessorKey: "schema_name",
     header: "Schema",
   },
@@ -66,31 +88,9 @@ export const columns: ColumnDef<RLSPolicy>[] = [
     accessorKey: "role",
     header: "Role",
   },
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
 ]
 
-function jsonToCSV(json, project, user) {
+function jsonToCSV(json: any[], project: string, user: string | undefined) {
   const rows = []
 
   const headers = Object.keys(json[0])
@@ -125,7 +125,7 @@ export function PolicyDataTable({
   pols?: any
 }) {
   const [sorting, setSorting] = React.useState<SortingState>([])
-  const [rls, setRls] = React.useState<RLSPolicy[]>(pols)
+  const [rls, setRls] = React.useState<RLSPolicy[]>([])
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
@@ -147,15 +147,27 @@ export function PolicyDataTable({
 
     const data = await resp.json()
 
-    setRls(data)
-    const { data: user } = await supabase.auth.getUser()
-    const file = jsonToCSV(data, project, user.user?.id)
+    console.log(data)
 
-    const element = document.getElementById("rls-download")
-    const fileBlob = new Blob([file], { type: "text/plain" })
-    element.href = URL.createObjectURL(fileBlob)
-    element.download = `${project}-rls.csv`
+    setRls(data)
+    // const { data: user } = await supabase.auth.getUser()
+    // const file = jsonToCSV(data, project, user.user?.id)
+
+    // const element = document.getElementById("rls-download")
+    // const fileBlob = new Blob([file], { type: "text/plain" })
+    // // @ts-ignore
+    // element.href = URL.createObjectURL(fileBlob)
+    // // @ts-ignore
+    // element.download = `${project}-rls.csv`
   }
+
+  React.useEffect(() => {
+    if (pols) {
+      setRls(pols)
+    } else {
+      rlsFetching()
+    }
+  }, [])
 
   const table = useReactTable({
     data: rls,
@@ -181,9 +193,14 @@ export function PolicyDataTable({
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="flex-1 text-sm text-muted-foreground">
           {table &&
+            // @ts-ignore
             table.length &&
             table?.getFilteredSelectedRowModel().rows.length}{" "}
-          of {table && table.length && table?.getFilteredRowModel().rows.length}{" "}
+          of{" "}
+          {table &&
+            // @ts-ignore
+            table.length &&
+            table?.getFilteredRowModel().rows.length}{" "}
           row(s) selected.
         </div>
 
@@ -208,16 +225,39 @@ export function PolicyDataTable({
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table && table.length && table?.previousPage()}
-            disabled={!table && table.length && table?.getCanPreviousPage()}
+            onClick={() =>
+              table &&
+              // @ts-ignore
+              table.length &&
+              table?.previousPage()
+            }
+            disabled={
+              !table &&
+              // @ts-ignore
+              table.length &&
+              // @ts-ignore
+
+              table?.getCanPreviousPage()
+            }
           >
             Previous
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => table && table.length && table?.nextPage()}
-            disabled={!table && table.length && table?.getCanNextPage()}
+            onClick={() =>
+              table &&
+              // @ts-ignore
+              table.length &&
+              table?.nextPage()
+            }
+            disabled={
+              !table &&
+              // @ts-ignore
+              table.length &&
+              // @ts-ignore
+              table?.getCanNextPage()
+            }
           >
             Next
           </Button>
@@ -228,7 +268,7 @@ export function PolicyDataTable({
           <Table>
             <TableHeader>
               {table &&
-                table.length &&
+                // @ts-ignore
                 table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => (
@@ -244,7 +284,7 @@ export function PolicyDataTable({
             </TableHeader>
             <TableBody>
               {table &&
-                table.length &&
+                // @ts-ignore
                 table.getRowModel().rows.map((row) => (
                   <TableRow key={row.id}>
                     {row.getVisibleCells().map((cell) => (

@@ -11,7 +11,7 @@ function WorkflowsHeader({
   assistants,
 }: {
   project: string
-  assistants: any[]
+  assistants: any[] | undefined | null
 }) {
   return (
     <>

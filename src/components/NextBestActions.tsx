@@ -1,10 +1,8 @@
 "use client"
 
 import React, { useEffect } from "react"
-import { cookies } from "next/headers"
-import Agent from "@/classes/Agent"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import { Copy, MoveRight } from "lucide-react"
+import { MoveRight } from "lucide-react"
 import { toast } from "sonner"
 
 import { CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card"
@@ -34,6 +32,7 @@ function NextBestActions({
         return
       }
 
+      // @ts-ignore
       setUser(user.user)
     }
     load()
@@ -99,7 +98,7 @@ function NextBestActions({
     const rlsJson = await rlsData.json()
     const schemaJson = await schemaData.json()
 
-    function jsonToCSV(json, project, user) {
+    function jsonToCSV(json: any[], project: any, user: any) {
       const rows = []
 
       const headers = Object.keys(json[0])
@@ -273,9 +272,11 @@ function NextBestActions({
                             className={` `}
                           />
                         </a>
-                      ) : action.action ? (
+                      ) : // @ts-ignore
+                      action.action ? (
                         <MoveRight
                           size={16}
+                          // @ts-ignore
                           onClick={() => action.action()}
                           className="hover:translate-x-1 animate-in ease-in-out duration-300 text-green-500 cursor-pointer"
                         />

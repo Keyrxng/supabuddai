@@ -127,16 +127,14 @@ export function TestPlanDataTable({ work }: { work: any[] }) {
   }
 
   const toWork = async (dataa: any[]) => {
-    const result = []
-
-    console.log("dataa : ", dataa)
+    const result: any = []
 
     if (!dataa) return result
 
     const d = Array.isArray(dataa) ? dataa : [dataa]
 
     d.map((w) => {
-      w.tests.map((t) => {
+      w.tests.map((t: any) => {
         const entry = {
           index: w.index,
           schema_name: w.schema,
@@ -158,12 +156,9 @@ export function TestPlanDataTable({ work }: { work: any[] }) {
   React.useEffect(() => {
     async function load() {
       const data = await toWork(work)
-      console.log("load data : ", data)
       setRls((prev) => data)
     }
     load()
-
-    console.log("rls : ", rls)
   }, [work])
 
   const table = useReactTable({
