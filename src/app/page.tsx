@@ -480,7 +480,7 @@ export default function Page() {
                     </Button>
                   )}
                 </SheetTrigger>
-                <SheetContent className="w-full h-full bg-[#313131] sm:bg-transparent border-none sm:border-l mx-1.5 sm:mx-0 sm:mr-4">
+                <SheetContent className="w-full h-full bg-[#313131] sm:bg-transparent border-none sm:border-l sm:mr-4">
                   <SheetHeader>
                     <SheetTitle className="flex flex-col items-center">
                       <div className="flex items-center justify-center">

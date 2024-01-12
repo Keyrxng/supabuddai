@@ -34,13 +34,9 @@ export const metadata: Metadata = {
 
 const LogoSvg = () => (
   <svg
-    width="495.74375px"
-    height="124.39999999999999px"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="2.1281250000000114 12.800000000000004 495.74375 124.39999999999999"
-    style={{ background: `rgba(5, 17, 3, 0)` }}
-    preserveAspectRatio="xMidYMid"
-    className="h-14 w-min mx-auto"
+    className="h-14 w-min mx-auto border border-[#3ecf95] rounded-md"
   >
     <defs>
       <linearGradient
@@ -94,11 +90,10 @@ export default function RootLayout(params: { children: React.ReactNode }) {
           </main>
           <div className="inset-x-0 bottom-0">
             <footer className="flex justify-between border-gray-800 items-center w-full h-24 border-t">
-              <p className="hidden sm:inline-block text-gray-400 text-sm ml-12">
+              <p className=" text-gray-400 text-sm ml-12">
                 © {new Date().getFullYear()}{" "}
                 <span className="text-[#3ecf95]">SupaBuddAi</span>
               </p>
-              <LogoSvg />
 
               <div className="text-sm mr-12 text-gray-400">
                 Built with 💚 by {"  "}
