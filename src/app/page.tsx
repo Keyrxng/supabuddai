@@ -471,15 +471,13 @@ export default function Page() {
               <Sheet>
                 <SheetTrigger asChild>
                   {isClient && (
-                    <>
-                      <Button
-                        size="lg"
-                        accessKey="glowElement"
-                        className="mt-4 z-10 relative text-lg h-min w-min border-[0.1px] shadow-md drop-shadow-md shadow-[#1a1a1a] border-[#ffffff4b] bg-[#3ecf95]/65 hover:bg-[#3ecf95]/55"
-                      >
-                        Join the waitlist
-                      </Button>
-                    </>
+                    <Button
+                      size="lg"
+                      accessKey="glowElement"
+                      className="mt-4 z-10 relative text-lg h-min w-min border-[0.1px] animate-in ease-in-out slide-in-from-top-56 transition duration-500 shadow-md drop-shadow-md shadow-[#1a1a1a] border-[#ffffff4b] bg-[#3ecf95]/65 hover:bg-[#3ecf95]/55"
+                    >
+                      Join the waitlist
+                    </Button>
                   )}
                 </SheetTrigger>
                 <SheetContent className="w-full h-full bg-[#313131] sm:bg-transparent border-none sm:border-l mx-1.5 sm:mx-0 sm:mr-4">
