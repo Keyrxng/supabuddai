@@ -318,7 +318,7 @@ function Nav({ children }: Props) {
             <DrawerHeader>
               <DrawerTitle className="grid grid-cols-1">
                 <Image
-                  src="/SupaBuddAi.svg"
+                  src="/supabuddai.svg"
                   alt="Logo"
                   width={600}
                   height={600}

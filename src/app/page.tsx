@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { Metadata } from "next"
 import Image from "next/image"
 import router from "next/router"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
@@ -20,6 +21,7 @@ import { toast } from "sonner"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import {
   Carousel,
   CarouselContent,
@@ -237,27 +239,25 @@ export default function Page() {
 
   return (
     <>
-      <div className="w-full border-b border-gray-800 h-16 flex justify-center justify-items-center align-middle text-center">
+      <div className=" hidden sm:flex w-full border-b border-gray-800 h-16  justify-center justify-items-center align-middle text-center">
         <div className="col-span-12 flex items-center w-full text-center align-middle  inset-0 top-0 justify-between border-gray-800 ">
           <div className="h-16 w-full flex align-middle self-center items-center">
-            <div className="">
-              <a href="/">
-                <Image
-                  src="/supabuddai.svg"
-                  alt="Logo"
-                  width={600}
-                  height={600}
-                  className={`hidden sm:inline-block w-52 sm:w-76 m-0.5 h-full object-cover`}
-                />
-                <Image
-                  src="/supabuddai-logo.png"
-                  alt="Logo"
-                  width={160}
-                  height={160}
-                  className={`pt-1 h-14 sm:hidden object-contain min-w-fit`}
-                />
-              </a>
-            </div>
+            <a href="/">
+              <Image
+                src="/supabuddai.svg"
+                alt="Logo"
+                width={600}
+                height={600}
+                className={`hidden sm:inline-block w-52 sm:w-76 m-0.5 h-full object-cover`}
+              />
+              <Image
+                src="/supabuddai-logo.png"
+                alt="Logo"
+                width={160}
+                height={160}
+                className={`pt-1 h-14 sm:hidden object-contain min-w-fit`}
+              />
+            </a>
             <div
               onMouseEnter={() => setHidePill(true)}
               onMouseLeave={() => setHidePill(false)}
@@ -265,19 +265,20 @@ export default function Page() {
               <NavigationMenuDemo />
             </div>
           </div>
+
           <div className="col-span-12 w-max">
             <div className="flex justify-between pt-2 items-center">
               <div className="flex gap-2 items-center">
-                <div className="sm:hidden mr-2.5">
+                <div className="sm:hidden mr-6 sm:mr-2.5">
                   <Drawer>
                     <DrawerTrigger>
                       <Menu />
                     </DrawerTrigger>
-                    <DrawerContent className="w-screen px-4 space-x-2">
+                    <DrawerContent className="w-screen px-4 space-x-">
                       <DrawerHeader>
                         <DrawerTitle className="grid grid-cols-1">
                           <Image
-                            src="/SupaBuddAi.svg"
+                            src="/supabuddai.svg"
                             alt="Logo"
                             width={600}
                             height={600}
@@ -285,7 +286,6 @@ export default function Page() {
                           />
                         </DrawerTitle>
                         <DrawerDescription className="relative">
-                          {/* <LoadingLogo className="opacity-5 -z-10 absolute justify-center align-middle object-contain" /> */}
                           <Image
                             src="/supabuddai-logo.png"
                             alt="Logo"
@@ -440,8 +440,8 @@ export default function Page() {
                     Join the waitlist
                   </Button>
                 </SheetTrigger>
-                <SheetContent className="w-full mr-9 ">
-                  <SheetHeader className="ml-3">
+                <SheetContent className="w-full h-full bg-[#313131] sm:bg-transparent border-none sm:border-l mx-1.5 sm:mx-0 sm:mr-4">
+                  <SheetHeader>
                     <SheetTitle className="flex flex-col items-center">
                       <div className="flex items-center justify-center">
                         <Image
@@ -471,6 +471,28 @@ export default function Page() {
                         e.preventDefault()
                         // @ts-ignore
                         const { email, name } = e.target.elements
+                        if (!email.value) {
+                          toast.error("Please enter your email address.")
+                          return
+                        }
+                        if (!name.value) {
+                          toast.error("Please enter your preferred name.")
+                          return
+                        }
+
+                        const emailRegex = new RegExp(
+                          // eslint-disable-next-line no-control-regex
+                          "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9]" +
+                            "(?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?" +
+                            "(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}" +
+                            "[a-zA-Z0-9])?)*$"
+                        )
+
+                        if (!emailRegex.test(email.value)) {
+                          toast.error("Please enter a valid email address.")
+                          return
+                        }
+
                         joinWaitlist(email.value, name.value)
                       }}
                     >
@@ -478,11 +500,13 @@ export default function Page() {
                         type="text"
                         id="name"
                         html-for="name"
+                        required
                         placeholder="Preferred Name"
                       />
                       <Input
                         type="email"
                         id="email"
+                        required
                         html-for="email"
                         placeholder="Email Address"
                       />
@@ -622,10 +646,14 @@ export default function Page() {
 
               <Carousel className="m-4 max-w-xs md:hidden">
                 <CarouselContent>
-                  <CarouselItem>
+                  <CarouselItem
+                    onClick={() => {
+                      // preview image in modal
+                    }}
+                  >
                     <Image
-                      src="/dashboard-preview.jpg"
-                      alt="Dashboard Preview"
+                      src="/project-setup.png"
+                      alt="Project Setup Preview"
                       width={600}
                       height={400}
                       className="rounded-lg"
@@ -633,17 +661,8 @@ export default function Page() {
                   </CarouselItem>
                   <CarouselItem>
                     <Image
-                      src="/dashboard-preview.jpg"
-                      alt="Dashboard Preview"
-                      width={600}
-                      height={400}
-                      className="rounded-lg"
-                    />
-                  </CarouselItem>
-                  <CarouselItem>
-                    <Image
-                      src="/dashboard-preview.jpg"
-                      alt="Dashboard Preview"
+                      src="/planning-phase.png"
+                      alt="Planning Phase Preview"
                       width={600}
                       height={400}
                       className="rounded-lg"

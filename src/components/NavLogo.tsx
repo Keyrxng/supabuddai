@@ -82,7 +82,7 @@ function NavLogo({ className }: { className?: string }) {
             viewBox="0 0 390 430"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
-            className={`relative top-1/2 bottom-1/2 left-1/2 transform -translate-x-1/2 mr-1 pr-1 w-[150%] h-[150%] z-20 m-auto ml-1 mb-6`}
+            className={`hidden sm:flex relative top-1/2 bottom-1/2 left-1/2 transform -translate-x-1/2 mr-1 pr-1 w-[150%] h-[150%] z-20 m-auto ml-1 mb-6`}
             id="glowElement"
           >
             <path
@@ -105,7 +105,7 @@ function NavLogo({ className }: { className?: string }) {
             </defs>
           </svg>
           <Image
-            src="/SupaBuddAi-logo.png"
+            src="/supabuddai-logo.png"
             priority
             quality={100}
             className={`absolute opacity-35 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2`}

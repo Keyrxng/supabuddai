@@ -20,10 +20,10 @@ export function NavigationMenuDemo() {
   return (
     <NavigationMenu className="mt-3">
       <NavigationMenuList>
-        <NavigationMenuItem>
+        <NavigationMenuItem className="hidden sm:inline-block">
           <NavigationMenuTrigger>Why SupaBuddAi?</NavigationMenuTrigger>
           <NavigationMenuContent className="bg-[#313131] mx-auto">
-            <ul className="grid gap-3 p-6 md:w-[400px] lg:w-[500px] grid-cols-2 text-white">
+            <ul className="grid gap-3 p-6 sm:w-[400px] lg:w-[500px] grid-cols-2 text-white">
               <ListItem
                 className="hover:bg-[#353535] "
                 href="/#advanced-security"
@@ -73,7 +73,7 @@ export function NavigationMenuDemo() {
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>
-        <NavigationMenuItem>
+        <NavigationMenuItem className="hidden md:inline-block">
           <NavigationMenuTrigger disabled>
             Getting Started
           </NavigationMenuTrigger>
