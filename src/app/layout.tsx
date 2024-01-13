@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   ],
   creator: "Keyrxng",
   twitter: {
-    title: "SupaBuddAi: A Supabase Security ChatBot",
+    title: "SupaBuddAi: Supabase Security Automation",
     images: [
       {
         url: "https://supabuddai.xyz/supabuddai-logo.png",
