@@ -10,6 +10,7 @@ import {
   LifeBuoy,
   LogOut,
   Menu,
+  MoveDown,
   MoveRight,
   Settings,
   User,
@@ -18,6 +19,12 @@ import {
 } from "lucide-react"
 import { toast } from "sonner"
 
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import {
@@ -287,6 +294,18 @@ export default function Page() {
     </svg>
   )
 
+  const smallDot = (
+    <svg
+      width="8"
+      height="8"
+      viewBox="0 0 8 8"
+      fill="currentColor"
+      className="text-[#3ecf95]"
+    >
+      <circle cx="4" cy="4" r="4" />
+    </svg>
+  )
+
   return (
     <>
       <div className=" hidden sm:flex w-full border-b border-gray-800 h-16  justify-center justify-items-center align-middle text-center">
@@ -553,6 +572,7 @@ export default function Page() {
 
             <NavLogo className="h-min inset-0 mt-[5rem] absolute mx-auto grid opacity-20 justify-center items-center" />
           </div>
+
           <div
             onMouseMove={handleGlow}
             className="my-8 mx-auto max-w-4xl p-4 cursor-default bg-[#1a1a1a] rounded-lg shadow-lg transition duration-500 hover:scale-105"
@@ -595,12 +615,14 @@ export default function Page() {
             className="my-8 mx-auto max-w-4xl p-4 cursor-default bg-[#1a1a1a] rounded-lg shadow-lg transition duration-500 hover:scale-105"
           >
             <h2 className="text-3xl font-semibold text-[#3ecf95]">
-              AI Trained on Your Data
+              Your Database ChatBot
             </h2>
             <p className="text-gray-300 mt-2">
-              Your data is unique, and so are your security needs. SupaBuddAi is
-              trained on your database and data structure, allowing granular and
-              precise security testing and enforcement.
+              Think of SupaBuddAi as your database ChatBot, trained on your
+              database structure as opposed to it&apos;s data. We leverage the
+              power of AI to automate the process of creating a test suite to
+              validate your RLS policies. <br /> But you can ask it{" "}
+              <span className="italic">anything</span>.
             </p>
             <div className="mt-4 flex justify-center">
               <Badge className="animate-pulse hover:text-white cursor-default hover:bg-[#3ecf95]/50 bg-[#3ecf95] text-black">
@@ -757,6 +779,222 @@ export default function Page() {
               <Badge className="animate-pulse hover:text-white cursor-default hover:bg-[#3ecf95]/50 bg-[#3ecf95] text-black">
                 Automation
               </Badge>
+            </div>
+          </div>
+
+          <div className="w-full cursor-default max-w-7xl p-4 from-[#3ecf95]  to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent rounded-lg shadow-lg transition duration-500 ">
+            <h2 className="text-3xl font-semibold text-[#3ecf95]">
+              Frequently Asked Questions
+            </h2>
+            <div className="max-w-3xl justify-center text-center mx-auto ">
+              <Accordion type="single" collapsible>
+                <AccordionItem value="item-1">
+                  <AccordionTrigger>
+                    <h3 className="flex justify-between w-full ">
+                      How does it work?{" "}
+                    </h3>
+                  </AccordionTrigger>
+                  <AccordionContent className=" font-light text-lg">
+                    <ol className="grid border grid-flow-col gap-2 container px-2">
+                      <li className="w-full from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
+                        <ul className="grid grid-flow-row mt-4 gap-2 container">
+                          <li className="border-x border-[#3ecf95] container w-full  rounded-lg bg-clip-text text-transparent  bg-[#313131]">
+                            <h4 className=" text-xl font-bold from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
+                              Supabase Function
+                            </h4>
+                            <p className=" from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
+                              We aggregrate your RLS policies through a simple
+                              database function that you will add to your
+                              database manually.
+                            </p>
+                          </li>
+                          <li className="border-x border-[#3ecf95] container w-full rounded-lg bg-clip-text text-transparent  bg-[#313131]">
+                            <h4 className=" text-xl font-bold from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
+                              Supabase Types
+                            </h4>
+                            <p className=" from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
+                              We turn your schema into Typescript types, this
+                              allows a deep foundational understanding of your
+                              database structure without looking at your data.
+                            </p>{" "}
+                          </li>
+                          <li className="border-x border-[#3ecf95] container w-full  rounded-lg bg-clip-text text-transparent  bg-[#313131]">
+                            <h4 className=" text-xl font-bold from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
+                              Automating Database Testing
+                            </h4>
+                            <p className=" from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
+                              We create a custom-tailored AI model that is
+                              trained on your database and data structure,
+                              allowing granular and precise security testing and
+                              enforcement.
+                            </p>
+                          </li>
+                          <li className="border-x border-[#3ecf95] container w-full rounded-lg bg-clip-text text-transparent  bg-[#313131]">
+                            <h4 className=" text-xl font-bold from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
+                              Database Report
+                            </h4>
+                            <p className=" from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
+                              Post-testing and enforcement, we provide you with
+                              a comprehensive report that outlines your database
+                              security status, including suggestions on how to
+                              improve.
+                            </p>
+                          </li>
+
+                          <li className="border-x border-[#3ecf95] container w-full rounded-lg bg-clip-text text-transparent  bg-[#313131]">
+                            <h4 className=" text-xl font-bold from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
+                              Database ChatBot
+                            </h4>
+                            <p className="from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
+                              You have your own database security ChatBot that
+                              you can ask anything about your database
+                              structure, security, or anything else you can
+                              think of.
+                            </p>
+                          </li>
+                        </ul>
+                      </li>
+                    </ol>
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-2">
+                  <AccordionTrigger>
+                    <h3 className="flex justify-between w-full ">
+                      What else can it do?{" "}
+                    </h3>
+                  </AccordionTrigger>
+                  <AccordionContent className=" font-light text-lg">
+                    <ol className="grid border grid-flow-col gap-2 container">
+                      <li className="from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
+                        <ul className="grid md:grid-flow-col grid-flow-row mt-4 gap-2 container">
+                          <li className="border-gray-800">
+                            <p className="font-semibold from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
+                              <span className="font-light">
+                                Create complex SQL queries and RLS policies with
+                                it&apos;s understanding of your database
+                                structure.
+                              </span>{" "}
+                            </p>
+                          </li>
+                          <li className="border-gray-800">
+                            <p className="font-semibold from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
+                              <span className="font-light">
+                                Optimize performance, security and cost
+                                efficiency while reducing complexity.
+                              </span>{" "}
+                            </p>
+                          </li>
+                          <li className="border-gray-800">
+                            <p className="font-semibold from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
+                              <span className="font-light">
+                                Provide suggestions on how to improve your
+                                database security and structure.{" "}
+                                <span className="italic">Fast.</span>
+                              </span>{" "}
+                            </p>
+                          </li>
+                        </ul>
+                      </li>
+                    </ol>
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-3">
+                  <AccordionTrigger>
+                    <h3 className="flex justify-between w-full ">
+                      How much does it cost?{" "}
+                    </h3>
+                  </AccordionTrigger>
+                  <AccordionContent className=" font-meduim text-lg">
+                    <ol className="grid border grid-flow-col gap-2 container">
+                      <li className="from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
+                        <ul className="grid md:grid-flow-col grid-flow-row mt-4 gap-2 container">
+                          <li className="border-gray-800">
+                            <p className="font-semibold from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
+                              <span className="font-light">
+                                We&apos;re still working on the pricing model
+                                but we&apos;re aiming to be as affordable as
+                                possible with various pricing models available.
+                              </span>{" "}
+                            </p>
+                          </li>
+                        </ul>
+                      </li>
+                    </ol>
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-4">
+                  <AccordionTrigger>
+                    <h3 className="flex justify-between w-full ">
+                      Is my data safe?{" "}
+                    </h3>
+                  </AccordionTrigger>
+                  <AccordionContent className=" font-meduim text-lg">
+                    <ol className="grid border grid-flow-col gap-2 container">
+                      <li className="from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
+                        <ul className="grid md:grid-flow-col grid-flow-row mt-4 gap-2 container">
+                          <li className="border-gray-800">
+                            <p className="font-semibold from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
+                              <span className="font-light">
+                                We only store your schema, policies and
+                                connection details. We do not store any of your
+                                table data.
+                              </span>{" "}
+                            </p>
+                          </li>
+                        </ul>
+                      </li>
+                    </ol>
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-5">
+                  <AccordionTrigger>
+                    <h3 className="flex justify-between w-full ">
+                      How do I integrate AI into my database?{" "}
+                    </h3>
+                  </AccordionTrigger>
+                  <AccordionContent className=" font-meduim text-lg">
+                    <ol className="grid border grid-flow-col gap-2 container">
+                      <li className="from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
+                        <ul className="grid md:grid-flow-col grid-flow-row mt-4 gap-2 container">
+                          <li className="border-gray-800">
+                            <p className="font-semibold from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
+                              <span className="font-light">
+                                We&apos;ll provide you with a simple Supabase
+                                function that you will add to your database
+                                manually. This function is used to aggregate
+                                your RLS policies.
+                              </span>{" "}
+                            </p>
+                          </li>
+                        </ul>
+                      </li>
+                    </ol>
+                  </AccordionContent>
+                </AccordionItem>
+                <AccordionItem value="item-6">
+                  <AccordionTrigger>
+                    <h3 className="flex justify-between w-full ">
+                      When will it be available?{" "}
+                    </h3>
+                  </AccordionTrigger>
+                  <AccordionContent className=" font-meduim text-lg">
+                    <ol className="grid border grid-flow-col gap-2 container">
+                      <li className="from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
+                        <ul className="grid md:grid-flow-col grid-flow-row mt-4 gap-2 container">
+                          <li className="border-gray-800">
+                            <p className="font-semibold from-[#ffffff] to-[#ffffffb4] bg-gradient-to-b bg-clip-text text-transparent">
+                              <span className="font-light">
+                                We&apos;re aiming to launch by the end of
+                                January 2024.
+                              </span>{" "}
+                            </p>
+                          </li>
+                        </ul>
+                      </li>
+                    </ol>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
             </div>
           </div>
         </div>
