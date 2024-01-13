@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     description:
       "Automate the testing of your Supabase RLS policies in minutes, not hours.",
     creator: "@keyrxng",
-    card: "summary_large_image",
+    card: "summary",
   },
 }
 
