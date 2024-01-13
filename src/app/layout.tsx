@@ -29,15 +29,12 @@ export const metadata: Metadata = {
     images: [
       {
         url: "https://supabuddai.xyz/supabuddai-logo.png",
-        width: 1000,
-        height: 1000,
-        alt: "SupaBuddAi Logo",
       },
     ],
     description:
       "Automate the testing of your Supabase RLS policies in minutes, not hours.",
     creator: "@keyrxng",
-    card: "summary",
+    card: "summary_large_image",
   },
 }
 
