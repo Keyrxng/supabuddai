@@ -24,12 +24,13 @@ export const metadata: Metadata = {
     },
   ],
   creator: "Keyrxng",
-  // twitter: {
-  //   title: "SupaBuddAi: AI-Driven Security Automation for Supabase",
-  //   description:
-  //     "Streamline your database security protocols with SupaBuddAi - your AI companion in enforcing robust RLS policies and schema validation.",
-  //   creator: "@keyrxng",
-  // },
+  twitter: {
+    title: "SupaBuddAi: AI-Driven Security Automation for Supabase",
+    description:
+      "Automate the testing of your Supabase RLS policies in minutes, not hours, leaving behind a well-rounded Database Chatbot.",
+    creator: "@keyrxng",
+    card: "summary",
+  },
 }
 
 const LogoSvg = () => (
