@@ -25,9 +25,9 @@ export const metadata: Metadata = {
   ],
   creator: "Keyrxng",
   twitter: {
-    title: "SupaBuddAi: AI-Driven Security Automation for Supabase",
+    title: "SupaBuddAi: A Supabase Security ChatBot",
     description:
-      "Automate the testing of your Supabase RLS policies in minutes, not hours, leaving behind a well-rounded Database Chatbot.",
+      "Automate the testing of your Supabase RLS policies in minutes, not hours.",
     creator: "@keyrxng",
     card: "summary",
   },
