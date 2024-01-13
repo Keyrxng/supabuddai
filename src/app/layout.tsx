@@ -27,8 +27,12 @@ export const metadata: Metadata = {
   twitter: {
     title: "SupaBuddAi: A Supabase Security ChatBot",
     images: [
-      "https://supabuddai.xyz/supabuddai-logo.png",
-      "https://supabuddai.xyz/supabuddai-logo.png",
+      {
+        url: "https://supabuddai.xyz/supabuddai-logo.png",
+        width: 1000,
+        height: 1000,
+        alt: "SupaBuddAi Logo",
+      },
     ],
     description:
       "Automate the testing of your Supabase RLS policies in minutes, not hours.",
